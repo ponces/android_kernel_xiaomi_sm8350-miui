@@ -367,6 +367,13 @@ static int limits_dcvs_probe(struct platform_device *pdev)
 		return 0;
 	}
 
+	if (!IS_ENABLED(CONFIG_QTI_THERMAL_LIMITS_DCVS)) {
+		limits_isens_vref_ldo_init(pdev, hw);
+		devm_kfree(&pdev->dev, hw->cdev_data);
+		devm_kfree(&pdev->dev, hw);
+		return 0;
+	}
+
 	hw->hw_freq_limit = U32_MAX;
 	snprintf(hw->sensor_name, sizeof(hw->sensor_name), "limits_sensor-%02d",
 			affinity);
