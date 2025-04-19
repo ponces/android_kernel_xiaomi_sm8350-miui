@@ -447,6 +447,7 @@ static int fw_decompress_xz(struct device *dev, struct fw_priv *fw_priv,
 #define PATH_SIZE		255
 static char fw_path_para[CUSTOM_FW_PATH_COUNT][PATH_SIZE];
 static const char * const fw_path[] = {
+	"/vendor/firmware",
 	fw_path_para[0],
 	fw_path_para[1],
 	fw_path_para[2],
@@ -460,8 +461,7 @@ static const char * const fw_path[] = {
 	"/lib/firmware/updates/" UTS_RELEASE,
 	"/lib/firmware/updates",
 	"/lib/firmware/" UTS_RELEASE,
-	"/lib/firmware",
-	"/vendor/firmware"
+	"/lib/firmware"
 };
 
 static char strpath[PATH_SIZE * CUSTOM_FW_PATH_COUNT];
