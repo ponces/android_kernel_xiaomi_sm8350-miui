@@ -47,7 +47,7 @@
 
 #define AW8697_VERSION "v1.1.3"
 
-#define AWINIC_RAM_UPDATE_DELAY
+// #define AWINIC_RAM_UPDATE_DELAY
 
 #define AW_I2C_RETRIES 2
 #define AW_I2C_RETRY_DELAY 2
