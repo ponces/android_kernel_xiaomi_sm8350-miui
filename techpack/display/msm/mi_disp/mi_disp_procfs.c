@@ -109,13 +109,12 @@ static int mi_disp_procfs_tx_cmd_set_open(struct inode *inode, struct file *file
 	return single_open(file, mi_disp_procfs_tx_cmd_set_show, PDE_DATA(inode));
 }
 
-const struct file_operations tx_cmd_set_proc_fops = {
-	.owner   = THIS_MODULE,
-	.open    = mi_disp_procfs_tx_cmd_set_open,
-	.write   = mi_disp_procfs_tx_cmd_set_write,
-	.read    = seq_read,
-	.llseek  = seq_lseek,
-	.release = single_release,
+const struct proc_ops tx_cmd_set_proc_ops = {
+	.proc_open    = mi_disp_procfs_tx_cmd_set_open,
+	.proc_write   = mi_disp_procfs_tx_cmd_set_write,
+	.proc_read    = seq_read,
+	.proc_lseek  = seq_lseek,
+	.proc_release = single_release,
 };
 
 static ssize_t mi_disp_procfs_mipi_rw_write(struct file *filp,
@@ -176,13 +175,12 @@ static int mi_disp_procfs_mipi_rw_open(struct inode *inode, struct file *file)
 	return single_open(file, mi_disp_procfs_mipi_rw_show, PDE_DATA(inode));
 }
 
-const struct file_operations mipi_rw_proc_fops = {
-	.owner   = THIS_MODULE,
-	.open    = mi_disp_procfs_mipi_rw_open,
-	.write   = mi_disp_procfs_mipi_rw_write,
-	.read    = seq_read,
-	.llseek  = seq_lseek,
-	.release = single_release,
+const struct proc_ops mipi_rw_proc_ops = {
+	.proc_open    = mi_disp_procfs_mipi_rw_open,
+	.proc_write   = mi_disp_procfs_mipi_rw_write,
+	.proc_read    = seq_read,
+	.proc_lseek  = seq_lseek,
+	.proc_release = single_release,
 };
 
 static int mi_disp_procfs_mipi_rw_init(void *d_display, int disp_id)
@@ -205,7 +203,7 @@ static int mi_disp_procfs_mipi_rw_init(void *d_display, int disp_id)
 	if (is_support_disp_id(disp_id)) {
 		disp_procfs.mipi_rw_proc[disp_id] = proc_create_data(mipi_rw_str[disp_id],
 			S_IRUGO | S_IWUSR, disp_core->procfs_dir,
-			&mipi_rw_proc_fops, d_display);
+			&mipi_rw_proc_ops, d_display);
 		if (!disp_procfs.mipi_rw_proc[disp_id]) {
 			DISP_ERROR("create procfs entry failed for %s\n", mipi_rw_str[disp_id]);
 			ret = -ENODEV;
@@ -216,7 +214,7 @@ static int mi_disp_procfs_mipi_rw_init(void *d_display, int disp_id)
 
 		disp_procfs.tx_cmd_set[disp_id] = proc_create_data(tx_cmd_set_str[disp_id],
 			S_IRUGO | S_IWUSR, disp_core->procfs_dir,
-			&tx_cmd_set_proc_fops, d_display);
+			&tx_cmd_set_proc_ops, d_display);
 		if (!disp_procfs.tx_cmd_set[disp_id]) {
 			DISP_ERROR("create procfs entry failed for %s\n", tx_cmd_set_str[disp_id]);
 			ret = -ENODEV;
