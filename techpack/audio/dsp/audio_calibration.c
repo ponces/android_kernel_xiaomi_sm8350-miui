@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2014, 2016-2017, 2020-2021, The Linux Foundation. All rights reserved.
- * Copyright (c) 2023, Qualcomm Innovation Center, Inc. All rights reserved.
  */
 #include <linux/slab.h>
 #include <linux/fs.h>
@@ -149,7 +148,7 @@ int audio_cal_register(int num_cal_types,
 			GFP_KERNEL);
 		if (callback_node == NULL) {
 			ret = -ENOMEM;
-			goto err_callback_node;
+			goto err;
 		}
 
 		memcpy(callback_node, &reg_data[i].callbacks,
@@ -161,13 +160,10 @@ int audio_cal_register(int num_cal_types,
 			&audio_cal.client_info[reg_data[i].cal_type]);
 		mutex_unlock(&audio_cal.cal_mutex[reg_data[i].cal_type]);
 	}
-	goto done;
-
-err_callback_node:
-	kfree(client_info_node);
+done:
+	return ret;
 err:
 	audio_cal_deregister(num_cal_types, reg_data);
-done:
 	return ret;
 }
 
@@ -417,7 +413,7 @@ static long audio_cal_shared_ioctl(struct file *file, unsigned int cmd,
 		pr_err("%s: Could not copy size value from user\n", __func__);
 		ret = -EFAULT;
 		goto done;
-	} else if ((size < 0) || (size < sizeof(struct audio_cal_basic))
+	} else if ((size < sizeof(struct audio_cal_basic))
 		|| (size > MAX_IOCTL_CMD_SIZE)) {
 		pr_err("%s: Invalid size sent to driver: %d, max size is %d, min size is %zd\n",
 			__func__, size, MAX_IOCTL_CMD_SIZE,
@@ -623,9 +619,7 @@ void audio_cal_exit(void)
 			kfree(client_info_node);
 			client_info_node = NULL;
 		}
-		mutex_destroy(&audio_cal.cal_mutex[i]);
 	}
-	mutex_destroy(&audio_cal.common_lock);
 	misc_deregister(&audio_cal_misc);
 }
 

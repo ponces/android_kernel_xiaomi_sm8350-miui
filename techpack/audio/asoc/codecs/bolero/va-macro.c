@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /* Copyright (c) 2018-2021, The Linux Foundation. All rights reserved.
- * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
  */
 
 #include <linux/module.h>
@@ -185,8 +184,6 @@ struct va_macro_priv {
 	int dec_mode[VA_MACRO_NUM_DECIMATORS];
 	u16 current_clk_id;
 	int pcm_rate[VA_MACRO_NUM_DECIMATORS];
-	bool dev_up;
-	u32 mclk_freq;
 };
 
 static bool va_macro_get_data(struct snd_soc_component *component,
@@ -329,9 +326,9 @@ static int va_macro_event_handler(struct snd_soc_component *component,
 		va_macro_core_vote(va_priv, false);
 		break;
 	case BOLERO_MACRO_EVT_SSR_UP:
+		trace_printk("%s, enter SSR up\n", __func__);
 		/* reset swr after ssr/pdr */
 		va_priv->reset_swr = true;
-		va_priv->dev_up = true;
 		if (va_priv->swr_ctrl_data)
 			swrm_wcd_notify(
 				va_priv->swr_ctrl_data[0].va_swr_pdev,
@@ -341,7 +338,6 @@ static int va_macro_event_handler(struct snd_soc_component *component,
 		bolero_rsc_clk_reset(va_dev, VA_CORE_CLK);
 		break;
 	case BOLERO_MACRO_EVT_SSR_DOWN:
-		va_priv->dev_up = false;
 		if (va_priv->swr_ctrl_data) {
 			swrm_wcd_notify(
 				va_priv->swr_ctrl_data[0].va_swr_pdev,
@@ -445,7 +441,9 @@ static int va_macro_swr_pwr_event_v2(struct snd_soc_dapm_widget *w,
 		}
 		break;
 	case SND_SOC_DAPM_POST_PMD:
-		if (va_priv->current_clk_id == VA_CORE_CLK) {
+		if (va_priv->current_clk_id == VA_CORE_CLK &&
+			va_priv->va_swr_clk_cnt != 0 &&
+			va_priv->tx_clk_status) {
 			ret = bolero_clk_rsc_request_clock(va_priv->dev,
 					va_priv->default_clk_id,
 					TX_CORE_CLK,
@@ -454,8 +452,7 @@ static int va_macro_swr_pwr_event_v2(struct snd_soc_dapm_widget *w,
 				dev_dbg(component->dev,
 					"%s: request clock TX_CLK disable failed\n",
 					__func__);
-				if (va_priv->dev_up)
-					break;
+				break;
 			}
 			ret = bolero_clk_rsc_request_clock(va_priv->dev,
 					va_priv->default_clk_id,
@@ -465,11 +462,10 @@ static int va_macro_swr_pwr_event_v2(struct snd_soc_dapm_widget *w,
 				dev_dbg(component->dev,
 					"%s: request clock VA_CLK disable failed\n",
 					__func__);
-				if (va_priv->dev_up)
-					bolero_clk_rsc_request_clock(va_priv->dev,
-						TX_CORE_CLK,
-						TX_CORE_CLK,
-						false);
+				bolero_clk_rsc_request_clock(va_priv->dev,
+					TX_CORE_CLK,
+					TX_CORE_CLK,
+					false);
 				break;
 			}
 			va_priv->current_clk_id = TX_CORE_CLK;
@@ -708,10 +704,6 @@ static int va_macro_tx_va_mclk_enable(struct va_macro_priv *va_priv,
 							   TX_CORE_CLK,
 							   false);
 			if (ret < 0) {
-				if (va_priv->swr_clk_users == 0) {
-					msm_cdc_pinctrl_select_sleep_state(
-							va_priv->va_swr_gpio_p);
-				}
 				dev_err_ratelimited(va_priv->dev,
 					"%s: swr request clk failed\n",
 					__func__);
@@ -1567,12 +1559,6 @@ static int va_macro_hw_params(struct snd_pcm_substream *substream,
 		"%s: dai_name = %s DAI-ID %x rate %d num_ch %d\n", __func__,
 		dai->name, dai->id, params_rate(params),
 		params_channels(params));
-
-	if (va_priv->mclk_freq != VA_MACRO_MCLK_FREQ) {
-		dev_err(va_dev, "%s: unsupported VA mclk: %u\n",
-			__func__, va_priv->mclk_freq);
-		return -EINVAL;
-	}
 
 	sample_rate = params_rate(params);
 	if (sample_rate > 16000)
@@ -2643,12 +2629,13 @@ static int va_macro_validate_dmic_sample_rate(u32 dmic_sample_rate,
 				      struct va_macro_priv *va_priv)
 {
 	u32 div_factor;
+	u32 mclk_rate = VA_MACRO_MCLK_FREQ;
 
 	if (dmic_sample_rate == VA_MACRO_DMIC_SAMPLE_RATE_UNDEFINED ||
-	    va_priv->mclk_freq % dmic_sample_rate != 0)
+	    mclk_rate % dmic_sample_rate != 0)
 		goto undefined_rate;
 
-	div_factor = va_priv->mclk_freq / dmic_sample_rate;
+	div_factor = mclk_rate / dmic_sample_rate;
 
 	switch (div_factor) {
 	case 2:
@@ -2676,13 +2663,13 @@ static int va_macro_validate_dmic_sample_rate(u32 dmic_sample_rate,
 
 	/* Valid dmic DIV factors */
 	dev_dbg(va_priv->dev, "%s: DMIC_DIV = %u, mclk_rate = %u\n",
-		__func__, div_factor, va_priv->mclk_freq);
+		__func__, div_factor, mclk_rate);
 
 	return dmic_sample_rate;
 
 undefined_rate:
 	dev_dbg(va_priv->dev, "%s: Invalid rate %d, for mclk %d\n",
-		 __func__, dmic_sample_rate, va_priv->mclk_freq);
+		 __func__, dmic_sample_rate, mclk_rate);
 	dmic_sample_rate = VA_MACRO_DMIC_SAMPLE_RATE_UNDEFINED;
 
 	return dmic_sample_rate;
@@ -2851,8 +2838,6 @@ static int va_macro_init(struct snd_soc_component *component)
 		snd_soc_dapm_ignore_suspend(dapm, "VA SWR_MIC7");
 	}
 	snd_soc_dapm_sync(dapm);
-
-	va_priv->dev_up = true;
 
 	for (i = 0; i < VA_MACRO_NUM_DECIMATORS; i++) {
 		va_priv->va_hpf_work[i].va_priv = va_priv;
@@ -3067,7 +3052,7 @@ static int va_macro_probe(struct platform_device *pdev)
 {
 	struct macro_ops ops;
 	struct va_macro_priv *va_priv;
-	u32 va_base_addr, sample_rate = 0, mclk_freq = 0;
+	u32 va_base_addr, sample_rate = 0;
 	char __iomem *va_io_base;
 	bool va_without_decimation = false;
 	const char *micb_supply_str = "va-vdd-micb-supply";
@@ -3080,7 +3065,6 @@ static int va_macro_probe(struct platform_device *pdev)
 	struct clk *lpass_audio_hw_vote = NULL;
 	u32 is_used_va_swr_gpio = 0;
 	const char *is_used_va_swr_gpio_dt = "qcom,is-used-swr-gpio";
-	const char *cdc_mclk_clk_rate = "qcom,cdc-mclk-clk-rate";
 
 	va_priv = devm_kzalloc(&pdev->dev, sizeof(struct va_macro_priv),
 			    GFP_KERNEL);
@@ -3099,15 +3083,6 @@ static int va_macro_probe(struct platform_device *pdev)
 					"qcom,va-without-decimation");
 
 	va_priv->va_without_decimation = va_without_decimation;
-	ret = of_property_read_u32(pdev->dev.of_node, cdc_mclk_clk_rate,
-				   &mclk_freq);
-	if (ret) {
-		va_priv->mclk_freq = VA_MACRO_MCLK_FREQ;
-	} else {
-		va_priv->mclk_freq = mclk_freq;
-	}
-	dev_dbg(va_priv->dev,
-		"%s: mclk_freq = %u\n", __func__, va_priv->mclk_freq);
 	ret = of_property_read_u32(pdev->dev.of_node, dmic_sample_rate,
 				   &sample_rate);
 	if (ret) {

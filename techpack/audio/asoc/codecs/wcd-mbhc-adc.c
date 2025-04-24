@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /* Copyright (c) 2017-2021, The Linux Foundation. All rights reserved.
  */
+#define DEBUG
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -485,8 +486,7 @@ static bool wcd_mbhc_adc_check_for_spl_headset(struct wcd_mbhc *mbhc,
 	adc_hph_threshold = wcd_mbhc_adc_get_hph_thres(mbhc);
 
 	if (output_mv > adc_threshold || output_mv < adc_hph_threshold) {
-		if (mbhc->force_linein == true)
-			spl_hs = false;
+		spl_hs = false;
 	} else {
 		spl_hs = true;
 		if (spl_hs_cnt)
@@ -548,12 +548,9 @@ static bool wcd_is_special_headset(struct wcd_mbhc *mbhc)
 		msleep(50);
 		output_mv = wcd_measure_adc_once(mbhc, MUX_CTL_IN2P);
 		if (output_mv <= adc_threshold) {
-			if (mbhc->force_linein != true) {
-				pr_debug(
-				"%s: Special headset detected in %d msecs\n",
-					 __func__, delay);
-				is_spl_hs = true;
-			}
+			pr_debug("%s: Special headset detected in %d msecs\n",
+					__func__, delay);
+			is_spl_hs = true;
 		}
 
 		if (delay == SPECIAL_HS_DETECT_TIME_MS) {
@@ -886,7 +883,7 @@ correct_plug_type:
 			}
 		}
 
-		if (output_mv > hs_threshold || mbhc->force_linein == true) {
+		if (output_mv > hs_threshold) {
 			pr_debug("%s: cable is extension cable\n", __func__);
 			plug_type = MBHC_PLUG_TYPE_HIGH_HPH;
 			wrk_complete = true;

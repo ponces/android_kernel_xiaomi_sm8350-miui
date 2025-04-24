@@ -7,6 +7,7 @@
  * Author: James Schulman <james.schulman@cirrus.com>
  *
  */
+#define DEBUG
 
 //#define MDSYNC_CS
 //#define FAST_SWITCH_DEBUG

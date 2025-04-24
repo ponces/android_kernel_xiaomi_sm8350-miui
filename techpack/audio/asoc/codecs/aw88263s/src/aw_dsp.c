@@ -1,3 +1,4 @@
+/*#define DEBUG*/
 #include <linux/module.h>
 #include <linux/debugfs.h>
 #include <asm/ioctls.h>

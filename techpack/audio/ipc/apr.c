@@ -31,7 +31,6 @@
 #include <dsp/audio_notifier.h>
 #include <ipc/apr.h>
 #include <ipc/apr_tal.h>
-#include <linux/mmhardware_sysfs.h>
 
 #define APR_PKT_IPC_LOG_PAGE_CNT 2
 
@@ -318,10 +317,7 @@ static void apr_adsp_up(void)
 	pr_info("%s: Q6 is Up\n", __func__);
 	place_marker("M - ADSP Ready");
 	apr_set_q6_state(APR_SUBSYS_LOADED);
-	/* register adsp hardware */
-#ifdef CONFIG_MMHARDWARE_DETECTION
-	register_kobj_under_mmsysfs(MM_HW_ADSP, MM_HARDWARE_SYSFS_ADSP_FOLDER);
-#endif
+
 	spin_lock(&apr_priv->apr_lock);
 	if (apr_priv->is_initial_boot)
 		schedule_work(&apr_priv->add_chld_dev_work);
@@ -1218,12 +1214,10 @@ static int apr_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	}
 
-#ifdef CONFIG_IPC_LOGGING
 	apr_pkt_ctx = ipc_log_context_create(APR_PKT_IPC_LOG_PAGE_CNT,
 						"apr", 0);
 	if (!apr_pkt_ctx)
 		pr_err("%s: Unable to create ipc log context\n", __func__);
-#endif  /* CONFIG_IPC_LOGGING */
 
 	spin_lock(&apr_priv->apr_lock);
 	apr_priv->is_initial_boot = true;

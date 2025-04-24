@@ -2,6 +2,7 @@
 /* Copyright (c) 2015-2021, The Linux Foundation. All rights reserved.
  */
 
+#define DEBUG
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -411,14 +412,6 @@ out_micb_en:
 		break;
 	/* MICBIAS usage change */
 	case WCD_EVENT_POST_DAPM_MICBIAS_2_OFF:
-#ifdef CONFIG_TARGET_PRODUCT_TAOYAO1
-	   if (mbhc->mbhc_cfg->enable_usbc_analog &&
-			(mbhc->is_hs_recording == true)) {
-			WCD_MBHC_REG_UPDATE_BITS(WCD_MBHC_L_DET_EN, 0);
-			if (mbhc->mbhc_cb->clk_setup)
-				mbhc->mbhc_cb->clk_setup(mbhc->component, false);
-		}
-#endif
 		mbhc->is_hs_recording = false;
 		pr_debug("%s: is_capture: %d\n", __func__,
 			  mbhc->is_hs_recording);
@@ -1217,12 +1210,8 @@ static void wcd_mbhc_swch_irq_handler(struct wcd_mbhc *mbhc)
 		WCD_MBHC_REG_UPDATE_BITS(WCD_MBHC_ELECT_SCHMT_ISRC, 0);
 		mbhc->extn_cable_hph_rem = false;
 		wcd_mbhc_report_plug(mbhc, 0, jack_type);
-#ifdef CONFIG_TARGET_PRODUCT_TAOYAO1
-		if (mbhc->mbhc_cfg->enable_usbc_analog &&
-			(mbhc->is_hs_recording == false)) {
-#else
-	    if (mbhc->mbhc_cfg->enable_usbc_analog) {
-#endif
+
+		if (mbhc->mbhc_cfg->enable_usbc_analog) {
 			WCD_MBHC_REG_UPDATE_BITS(WCD_MBHC_L_DET_EN, 0);
 			if (mbhc->mbhc_cb->clk_setup)
 				mbhc->mbhc_cb->clk_setup(

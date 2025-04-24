@@ -7,6 +7,7 @@
  * Author: James Schulman <james.schulman@cirrus.com>
  *
  */
+#define DEBUG
 #include <linux/module.h>
 #include <linux/i2c.h>
 #include <linux/regulator/consumer.h>

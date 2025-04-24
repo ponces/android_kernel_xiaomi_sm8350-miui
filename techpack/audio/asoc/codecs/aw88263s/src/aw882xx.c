@@ -12,6 +12,7 @@
  * option) any later version.
  */
 
+/*#define DEBUG*/
 #include <linux/module.h>
 #include <linux/i2c.h>
 #include <sound/core.h>
