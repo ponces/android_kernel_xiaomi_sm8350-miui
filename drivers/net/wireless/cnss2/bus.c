@@ -23,16 +23,20 @@ enum cnss_dev_bus_type cnss_get_bus_type(struct cnss_plat_data *plat_priv)
 {
 	int ret;
 	struct device *dev;
+	u32 bus_type_value = CNSS_BUS_NONE;
 	enum cnss_dev_bus_type bus_type = CNSS_BUS_NONE;
 
 	if (plat_priv->is_converged_dt) {
 		dev = &plat_priv->plat_dev->dev;
 		ret = of_property_read_u32(dev->of_node, "qcom,bus-type",
-					   &bus_type);
-		if (!ret && bus_type <= CNSS_BUS_USB)
+					   &bus_type_value);
+
+		if (!ret && bus_type <= CNSS_BUS_USB) {
+			bus_type = (enum cnss_dev_bus_type)bus_type_value;
 			cnss_pr_dbg("Got bus type[%u] from dt\n", bus_type);
-		else
+		} else {
 			cnss_pr_err("No bus type for converged dt\n");
+		}
 
 		return bus_type;
 	}
