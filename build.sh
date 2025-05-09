@@ -3,6 +3,8 @@
 # build.sh - Automic kernel building script for Rosemary Kernel
 #
 # Copyright (C) 2021-2023, Crepuscular's AOSP WorkGroup
+# Copyright (C) 2024-2025, EndCredits <endcredits@crepuscular-aosp.icu>
+#
 # Author: EndCredits <alicization.han@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -21,14 +23,9 @@ THREAD=$(nproc --all);
 CC_ADDITIONAL_FLAGS="LLVM_IAS=1 LLVM=1";
 TARGET_OUT="../out";
 
-FINAL_KERNEL_BUILD_PARA="ARCH=$TARGET_ARCH \
-                         CC=$TARGET_CC \
-                         CROSS_COMPILE=$TARGET_CROSS_COMPILE \
-                         CROSS_COMPILE_COMPAT=$TARGET_CROSS_COMPILE_COMPAT \
-                         CLANG_TRIPLE=$TARGET_CLANG_TRIPLE \
-                         $CC_ADDITIONAL_FLAGS \
-                         -j$THREAD
-                         O=$TARGET_OUT";
+WITH_GCC=0;
+CC_GCC=gcc;
+CC_GCC_ADDITIONAL_FLAGS="LLVM_IAS=0 LLVM=0 LD=ld";
 
 TARGET_KERNEL_FILE=arch/arm64/boot/Image;
 TARGET_KERNEL_DTB=arch/arm64/boot/dtb;
@@ -73,6 +70,10 @@ generate_flashable(){
     echo "------------------------------";
 
     FLASHABLE_KERNEL_NAME="${TARGET_KERNEL_NAME}-${TARGET_DEVICE}-${CURRENT_TIME}-${TARGET_KERNEL_MOD_VERSION}"
+
+    if [ $WITH_GCC == "1" ]; then
+        FLASHABLE_KERNEL_NAME+="-gcc"
+    fi
 
     echo ' Removing old package file ';
     rm -rf $TARGET_OUT/$ANYKERNEL_PATH;
@@ -121,7 +122,7 @@ clean(){
 
 display_help() {
         echo "build.sh: A very simple Kernel build helper"
-        echo "usage: build.sh <build option> <device>"
+        echo "usage: build.sh <build option> <device> <with gcc>"
         echo
         echo "Build options:"
         echo "    all             Perform a build without cleaning."
@@ -132,6 +133,14 @@ display_help() {
         echo "    kernelonly      Only build kernel image"
         echo "    defconfig       Only build kernel defconfig"
         echo "    help ( -h )     Print help information."
+        echo
+        echo "Devices:"
+        echo "    star            Xiaomi Mi 11 Ultra"
+        echo "    renoir          Xiaomi Mi 11 Lite 5G"
+        echo
+        echo "With GCC:"
+        echo "    1               Build with gcc"
+        echo "    0 or empty      Build with clang (default)"
         echo
 }
 
@@ -144,8 +153,34 @@ main(){
         display_help
         exit -1
     fi
+    if [ "$3" == "1" ]; then
+        echo "Building with system GCC"
+        WITH_GCC=1
+        FINAL_KERNEL_BUILD_PARA="ARCH=$TARGET_ARCH \
+                             CC=$CC_GCC \
+                             CROSS_COMPILE=$TARGET_CROSS_COMPILE \
+                             CROSS_COMPILE_COMPAT=$TARGET_CROSS_COMPILE_COMPAT \
+                             $CC_GCC_ADDITIONAL_FLAGS \
+                             -j$THREAD \
+                             O=$TARGET_OUT";
+    else
+        echo $3
+        echo "Building with clang"
+        FINAL_KERNEL_BUILD_PARA="ARCH=$TARGET_ARCH \
+                         CC=$TARGET_CC \
+                         CROSS_COMPILE=$TARGET_CROSS_COMPILE \
+                         CROSS_COMPILE_COMPAT=$TARGET_CROSS_COMPILE_COMPAT \
+                         CLANG_TRIPLE=$TARGET_CLANG_TRIPLE \
+                         $CC_ADDITIONAL_FLAGS \
+                         -j$THREAD \
+                         O=$TARGET_OUT";
+    fi
     TARGET_DEVICE=$2
-    DEFCONFIG_NAME="vendor/${TARGET_DEVICE}_defconfig";
+    if [ $WITH_GCC == "1" ]; then
+        DEFCONFIG_NAME="vendor/${TARGET_DEVICE}_gcc_defconfig";
+    else
+        DEFCONFIG_NAME="vendor/${TARGET_DEVICE}_defconfig";
+    fi
     if [ $1 == "help" -o $1 == "-h" ]
     then
         display_help
@@ -176,10 +211,13 @@ main(){
     elif [ $1 == "defconfig" ]
     then
         DEFCONFIG_NAME="vendor/lahaina-qgki_defconfig vendor/xiaomi_QGKI.config vendor/${TARGET_DEVICE}_QGKI.config vendor/debugfs.config"
+        if [ $WITH_GCC == "1" ]; then
+            DEFCONFIG_NAME+=" vendor/with_gcc.config"
+        fi
         make_defconfig;
     else
         display_help
     fi
 }
 
-main "$1" "$2";
+main "$1" "$2" "$3";
