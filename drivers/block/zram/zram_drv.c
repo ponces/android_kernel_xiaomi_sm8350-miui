@@ -2625,6 +2625,14 @@ static int __init zram_init(void)
 {
 	int ret;
 
+#ifdef CONFIG_ZRAM_LZ4P
+	ret = lz4p_init();
+	if (ret < 0) {
+		pr_err("init lz4p failed!\n");
+		return ret;
+	}
+#endif
+
 	ret = cpuhp_setup_state_multi(CPUHP_ZCOMP_PREPARE, "block/zram:prepare",
 				      zcomp_cpu_up_prepare, zcomp_cpu_dead);
 	if (ret < 0)
@@ -2665,6 +2673,10 @@ out_error:
 static void __exit zram_exit(void)
 {
 	destroy_devices();
+
+#ifdef CONFIG_ZRAM_LZ4P
+	lz4p_exit();
+#endif
 }
 
 module_init(zram_init);
