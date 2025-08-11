@@ -24,8 +24,7 @@ CC_ADDITIONAL_FLAGS="LLVM_IAS=1 LLVM=1";
 TARGET_OUT="../out";
 
 WITH_GCC=0;
-CC_GCC=gcc;
-CC_GCC_ADDITIONAL_FLAGS="LLVM_IAS=0 LLVM=0 LD=ld";
+CC_GCC_ADDITIONAL_FLAGS="";
 
 TARGET_KERNEL_FILE=arch/arm64/boot/Image;
 TARGET_KERNEL_DTB=arch/arm64/boot/dtb;
@@ -157,7 +156,6 @@ main(){
         echo "Building with system GCC"
         WITH_GCC=1
         FINAL_KERNEL_BUILD_PARA="ARCH=$TARGET_ARCH \
-                             CC=$CC_GCC \
                              CROSS_COMPILE=$TARGET_CROSS_COMPILE \
                              CROSS_COMPILE_COMPAT=$TARGET_CROSS_COMPILE_COMPAT \
                              $CC_GCC_ADDITIONAL_FLAGS \
