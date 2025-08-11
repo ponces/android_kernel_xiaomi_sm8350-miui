@@ -49,6 +49,9 @@
 #include "lz4p_compress.h"
 #include "lz4p_decompress.h"
 
+// We moved this macro out of lz4 header due to LZ4 1.10.0 upgrade, currently == 1, see lz4.c
+#define LZ4_ACCELERATION_DEFAULT 1
+
 static const int LZ4_minLength = (MFLIMIT + 1);
 static const int LZ4_64Klimit = ((64 * KB) + (MFLIMIT - 1));
 
