@@ -409,7 +409,11 @@ ifneq ($(LLVM),)
 HOSTCC	= clang
 HOSTCXX	= clang++
 else
-HOSTCC	= gcc
+ifneq ($(USE_DEBIAN_GCC_15),)
+HOSTCC  = gcc
+else
+HOSTCC	= gcc-15
+endif
 HOSTCXX	= g++
 endif
 KBUILD_HOSTCFLAGS   := -Wall -Wmissing-prototypes -Wstrict-prototypes -O2 \
@@ -432,10 +436,19 @@ READELF		= llvm-readelf
 OBJSIZE		= llvm-size
 STRIP		= llvm-strip
 else
+ifneq ($(USE_DEBIAN_GCC_15),)
+CC		= $(CROSS_COMPILE)gcc-15
+else
 CC		= $(CROSS_COMPILE)gcc
+endif
 LD		= $(CROSS_COMPILE)ld
+ifneq ($(USE_DEBIAN_GCC_15),)
+AR		= $(CROSS_COMPILE)gcc-ar-15
+NM		= $(CROSS_COMPILE)gcc-nm-15
+else
 AR		= $(CROSS_COMPILE)ar
 NM		= $(CROSS_COMPILE)nm
+endif
 OBJCOPY		= $(CROSS_COMPILE)objcopy
 OBJDUMP		= $(CROSS_COMPILE)objdump
 READELF		= $(CROSS_COMPILE)readelf
@@ -459,6 +472,8 @@ KLZOP		= lzop
 LZMA		= lzma
 LZ4		= lz4c
 XZ		= xz
+
+$(warning "Building with $(CC)")
 
 CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
 		  -Wbitwise -Wno-return-void -Wno-unknown-attribute $(CF)
