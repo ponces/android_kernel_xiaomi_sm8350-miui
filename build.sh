@@ -17,8 +17,15 @@
 TARGET_ARCH=arm64;
 TARGET_CC=clang;
 TRAGET_CLANG_TRIPLE=aarch64-linux-gnu-;
+
+source /etc/os-release
+if [ $ID == "opensuse-tumbleweed" ]; then
+TARGET_CROSS_COMPILE=aarch64-suse-linux-;
+TARGET_CROSS_COMPILE_COMPAT=arm-suse-linux-gnueabi-;
+else
 TARGET_CROSS_COMPILE=aarch64-linux-gnu-;
 TARGET_CROSS_COMPILE_COMPAT=arm-linux-gnueabi-;
+fi
 THREAD=$(nproc --all);
 CC_ADDITIONAL_FLAGS="LLVM_IAS=1 LLVM=1";
 TARGET_OUT="../out";
