@@ -1,0 +1,6 @@
+config XIAOMI_CPUFREQ_EFF
+	bool "Xiaomi CPU frequency efficiency tweaks"
+	default n
+	help
+	  Apply power efficiency tweaks to the cpufreq governor by
+	  avoiding inefficient frequency points when crossing power domains.

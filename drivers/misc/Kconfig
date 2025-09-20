@@ -554,6 +554,7 @@ config BOOTUP_RECLAIM
         help
           reclaim global memory when bootup
 
+source "drivers/misc/cpu_efficiency/Kconfig"
 source "drivers/misc/c2port/Kconfig"
 source "drivers/misc/eeprom/Kconfig"
 source "drivers/misc/cb710/Kconfig"

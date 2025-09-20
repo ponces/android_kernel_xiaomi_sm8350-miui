@@ -1,0 +1,1 @@
+obj-$(CONFIG_XIAOMI_CPUFREQ_EFF) += xiaomi_cpufreq_eff.o
