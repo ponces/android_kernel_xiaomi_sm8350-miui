@@ -1,28 +1,37 @@
 // SPDX-License-Identifier: GPL-2.0-only
 #include <linux/xiaomi_cpufreq_eff.h>
 
-// affect_mode, @1: enable, @0: disable.
+/* affect_mode, @1: enable, @0: disable. */
 static int affect_mode = 1;
 module_param(affect_mode, int, 0664);
 
-// Silver cluster, param@0: affect_freq1, param@1: affect_thres1, param@2: affect_freq2, param@3: affect_thres2, param@4 need mask freq.
+/*
+ * Silver cluster, param@0: affect_freq1, param@1: affect_thres1,
+ * param@2: affect_freq2, param@3: affect_thres2, param@4 need mask freq.
+ */
 static int cluster0_effiency[MAX_CLUSTER_PARAMETERS] = { 902400, 120000,
 							 1401600, 180000, 1708800 };
 module_param_array(cluster0_effiency, int, NULL, 0664);
 
-// Gold cluster, param@0: affect_freq1, param@1: affect_thres1, param@2: affect_freq2, param@3: affect_thres2, param@4 need mask freq.
+/*
+ * Gold cluster, param@0: affect_freq1, param@1: affect_thres1,
+ * param@2: affect_freq2, param@3: affect_thres2, param@4 need mask freq.
+ */
 static int cluster1_effiency[MAX_CLUSTER_PARAMETERS] = { 844800, 140000,
 							 1324800, 220000, 1881600 };
 module_param_array(cluster1_effiency, int, NULL, 0664);
 
-// Gold_plus cluster, param@0: affect_freq1, param@1: affect_thres1, param@2: affect_freq2, param@3: affect_thres2, param@4 need mask freq.
+/*
+ * Gold_plus cluster, param@0: affect_freq1, param@1: affect_thres1,
+ * param@2: affect_freq2, param@3: affect_thres2, param@4 need mask freq.
+ */
 static int cluster2_effiency[MAX_CLUSTER_PARAMETERS] = { 960000, 180000,
 							 1555200, 260000, 1900800 };
 
-static unsigned int platform_soc_id = 0;
-static unsigned int opp_number[MAX_CLUSTER] = { 0, 0, 0 };
+static unsigned int platform_soc_id;
+static unsigned int opp_number[MAX_CLUSTER];
 
-// Power Domain for SM8350
+/* Power Domain for SM8350 */
 static unsigned int sm8350_cluster_pd[MAX_CLUSTER] = { 16, 16, 19 };
 static unsigned int sm8350_pd_sliver[16] = { 0, 0, 0, 0, 0, 1, 1, 2,
 					     2, 2, 3, 3, 3, 4, 5, 5 };
@@ -40,22 +49,20 @@ static int get_cluster_num(struct cpufreq_policy *policy)
 
 	first_cpu = cpumask_first(policy->related_cpus);
 	cpu_dev = get_cpu_device(first_cpu);
-	if (cpu_dev == NULL) {
-		pr_err("failed to get cpu device, return. \n");
+	if (!cpu_dev) {
+		pr_err("failed to get cpu device, return.\n");
 		return -1;
 	}
 
 	cluster_num = topology_physical_package_id(cpu_dev->id);
 	if (cluster_num >= MAX_CLUSTER) {
-		pr_err("failed to get cluster, as error cluster id, return. \n");
+		pr_err("failed to get cluster, as error cluster id, return.\n");
 		return -1;
 	}
 
 	if (platform_soc_id == SM8350_SOC_ID) {
-		if (*(opp_number + cluster_num) !=
-		    *(sm8350_cluster_pd + cluster_num)) {
+		if (opp_number[cluster_num] != sm8350_cluster_pd[cluster_num])
 			return -1;
-		}
 	}
 
 	return cluster_num;
@@ -93,17 +100,15 @@ static bool was_diff_powerdomain(struct cpufreq_policy *policy,
 	index_pre = cpufreq_frequency_table_target(policy, freq - 1,
 						   CPUFREQ_RELATION_H);
 
-	if (index == index_pre) {
+	if (index == index_pre)
 		return false;
-	}
 
 	cluster_pd = get_cluster_pd(policy);
-	if (cluster_pd != NULL) {
-		if (*(cluster_pd + index) == *(cluster_pd + index_pre)) {
+	if (cluster_pd) {
+		if (cluster_pd[index] == cluster_pd[index_pre])
 			return false;
-		} else {
-			return true; //diff power domain
-		}
+		else
+			return true; /* diff power domain */
 	}
 
 	return false;
@@ -117,16 +122,13 @@ static bool was_mask_freq(struct cpufreq_policy *policy, unsigned int freq)
 	cluster_id = get_cluster_num(policy);
 	switch (cluster_id) {
 	case SLIVER_CLUSTER:
-		ret = (freq == cluster0_effiency[MASK_FREQ_VALUE]) ? true :
-								     false;
+		ret = (freq == cluster0_effiency[MASK_FREQ_VALUE]);
 		break;
 	case GOLDEN_CLUSTER:
-		ret = (freq == cluster1_effiency[MASK_FREQ_VALUE]) ? true :
-								     false;
+		ret = (freq == cluster1_effiency[MASK_FREQ_VALUE]);
 		break;
 	case GOPLUS_CLUSTER:
-		ret = (freq == cluster2_effiency[MASK_FREQ_VALUE]) ? true :
-								     false;
+		ret = (freq == cluster2_effiency[MASK_FREQ_VALUE]);
 		break;
 	default:
 		ret = false;
@@ -147,9 +149,8 @@ static unsigned int select_effiency_freq(struct cpufreq_policy *policy,
 						    CPUFREQ_RELATION_H);
 	freq_temp = policy->freq_table[index_temp].frequency;
 
-	if ((loadadj_freq > freq) || (loadadj_freq < freq_temp)) {
+	if ((loadadj_freq > freq) || (loadadj_freq < freq_temp))
 		return freq;
-	}
 
 	cluster_id = get_cluster_num(policy);
 	switch (cluster_id) {
@@ -191,9 +192,8 @@ static unsigned int select_effiency_freq(struct cpufreq_policy *policy,
 		break;
 	}
 
-	if (abs(loadadj_freq - freq_temp) < affect_thres) {
+	if (abs(loadadj_freq - freq_temp) < affect_thres)
 		return freq_temp;
-	}
 
 	return freq;
 }
@@ -205,9 +205,8 @@ unsigned int xiaomi_update_power_eff_lock(struct cpufreq_policy *policy,
 	unsigned int temp_index;
 	unsigned long flags;
 
-	if ((affect_mode == 0) || (freq <= 0)) {
+	if (!affect_mode || (freq <= 0))
 		return freq;
-	}
 
 	raw_spin_lock_irqsave(&power_effiency_lock, flags);
 	if (was_mask_freq(policy, freq)) {
@@ -241,11 +240,10 @@ static int cpufreq_pd_init(void)
 		return -1;
 	}
 
-	if (strstr(prop_str, PLATFORM_SM8350)) {
+	if (strstr(prop_str, PLATFORM_SM8350))
 		platform_soc_id = SM8350_SOC_ID;
-	} else {
+	else
 		platform_soc_id = ABSENT_SOC_ID;
-	}
 	of_node_put(of_root);
 
 	return 0;
@@ -258,21 +256,20 @@ static int frequence_opp_init(struct cpufreq_policy *policy)
 
 	first_cpu = cpumask_first(policy->related_cpus);
 	cpu_dev = get_cpu_device(first_cpu);
-	if (cpu_dev == NULL) {
-		pr_err("failed to get cpu device, return. \n");
+	if (!cpu_dev) {
+		pr_err("failed to get cpu device, return.\n");
 		return -1;
 	}
 
 	cluster_id = topology_physical_package_id(cpu_dev->id);
 	if (cluster_id >= MAX_CLUSTER) {
-		pr_err("failed to get cluster, as error cluster id, return. \n");
+		pr_err("failed to get cluster, as error cluster id, return.\n");
 		return -1;
 	}
 
 	opp_num = dev_pm_opp_get_opp_count(cpu_dev);
-	if (*(opp_number + cluster_id) != opp_num) {
-		*(opp_number + cluster_id) = opp_num;
-	}
+	if (opp_number[cluster_id] != opp_num)
+		opp_number[cluster_id] = opp_num;
 
 	return 0;
 }
@@ -282,9 +279,9 @@ static int __init xiaomi_cpufreq_eff_init(void)
 	struct cpufreq_policy *policy;
 	int cpu;
 
-	for_each_possible_cpu (cpu) {
+	for_each_possible_cpu(cpu) {
 		policy = cpufreq_cpu_get(cpu);
-		if (policy == NULL) {
+		if (!policy) {
 			pr_err("cpu %d, policy is null\n", cpu);
 			continue;
 		}
@@ -297,7 +294,7 @@ static int __init xiaomi_cpufreq_eff_init(void)
 
 	raw_spin_lock_init(&power_effiency_lock);
 
-	pr_info("xiaomi_cpufreq_eff_init finished. \n");
+	pr_info("xiaomi_cpufreq_eff_init finished.\n");
 
 	return 0;
 }
