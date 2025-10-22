@@ -9,8 +9,8 @@ module_param(affect_mode, int, 0664);
  * Silver cluster, param@0: affect_freq1, param@1: affect_thres1,
  * param@2: affect_freq2, param@3: affect_thres2, param@4 need mask freq.
  */
-static int cluster0_efficiency[MAX_CLUSTER_PARAMETERS] = { 902400, 120000,
-	1401600, 180000, 1708800
+static int cluster0_efficiency[MAX_CLUSTER_PARAMETERS] = { 902400, 720000,
+	1401600, 1080000, 1708800
 };
 
 module_param_array(cluster0_efficiency, int, NULL, 0664);
@@ -19,8 +19,8 @@ module_param_array(cluster0_efficiency, int, NULL, 0664);
  * Gold cluster, param@0: affect_freq1, param@1: affect_thres1,
  * param@2: affect_freq2, param@3: affect_thres2, param@4 need mask freq.
  */
-static int cluster1_efficiency[MAX_CLUSTER_PARAMETERS] = { 844800, 140000,
-	1324800, 220000, 1881600
+static int cluster1_efficiency[MAX_CLUSTER_PARAMETERS] = { 844800, 840000,
+	1324800, 1320000, 1881600
 };
 
 module_param_array(cluster1_efficiency, int, NULL, 0664);
@@ -29,8 +29,8 @@ module_param_array(cluster1_efficiency, int, NULL, 0664);
  * Gold_plus cluster, param@0: affect_freq1, param@1: affect_thres1,
  * param@2: affect_freq2, param@3: affect_thres2, param@4 need mask freq.
  */
-static int cluster2_efficiency[MAX_CLUSTER_PARAMETERS] = { 960000, 180000,
-	1555200, 260000, 1900800
+static int cluster2_efficiency[MAX_CLUSTER_PARAMETERS] = { 960000, 1080000,
+	1555200, 1560000, 1900800
 };
 
 module_param_array(cluster2_efficiency, int, NULL, 0664);
