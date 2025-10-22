@@ -6,18 +6,18 @@ static int affect_mode = 1;
 module_param(affect_mode, int, 0664);
 
 // Silver cluster, param@0: affect_freq1, param@1: affect_thres1, param@2: affect_freq2, param@3: affect_thres2, param@4 need mask freq.
-static int cluster0_effiency[MAX_CLUSTER_PARAMETERS] = { 806400, 100000,
-							 1305600, 160000, 0 };
+static int cluster0_effiency[MAX_CLUSTER_PARAMETERS] = { 902400, 120000,
+							 1401600, 180000, 1708800 };
 module_param_array(cluster0_effiency, int, NULL, 0664);
 
 // Gold cluster, param@0: affect_freq1, param@1: affect_thres1, param@2: affect_freq2, param@3: affect_thres2, param@4 need mask freq.
-static int cluster1_effiency[MAX_CLUSTER_PARAMETERS] = { 844800, 120000,
-							 1324800, 200000, 0 };
+static int cluster1_effiency[MAX_CLUSTER_PARAMETERS] = { 844800, 140000,
+							 1324800, 220000, 1881600 };
 module_param_array(cluster1_effiency, int, NULL, 0664);
 
 // Gold_plus cluster, param@0: affect_freq1, param@1: affect_thres1, param@2: affect_freq2, param@3: affect_thres2, param@4 need mask freq.
-static int cluster2_effiency[MAX_CLUSTER_PARAMETERS] = { 960000, 160000,
-							 1555200, 240000, 0 };
+static int cluster2_effiency[MAX_CLUSTER_PARAMETERS] = { 960000, 180000,
+							 1555200, 260000, 1900800 };
 
 static unsigned int platform_soc_id = 0;
 static unsigned int opp_number[MAX_CLUSTER] = { 0, 0, 0 };
