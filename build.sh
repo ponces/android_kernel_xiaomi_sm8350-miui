@@ -14,6 +14,8 @@
 # Add clang to your PATH before using this script.
 #
 
+set -e
+
 TARGET_ARCH=arm64;
 TARGET_CC=clang;
 TRAGET_CLANG_TRIPLE=aarch64-linux-gnu-;
@@ -44,7 +46,7 @@ ANYKERNEL_PATH=anykernel
 DEFCONFIG_PATH=arch/arm64/configs
 
 START_SEC=$(date +%s);
-CURRENT_TIME=$(date '+%Y-%m%d%H%M');
+CURRENT_DATE=$(date '+%Y%m%d');
 
 link_all_dtb_files(){
     find $TARGET_OUT/arch/arm64/boot/dts/vendor/qcom -name '*.dtb' -exec cat {} + > $TARGET_OUT/arch/arm64/boot/dtb;
@@ -83,33 +85,33 @@ generate_flashable(){
     echo " Generating Flashable Kernel";
     echo "------------------------------";
 
-    FLASHABLE_KERNEL_NAME="${TARGET_KERNEL_NAME}-${TARGET_DEVICE}-${CURRENT_TIME}-${TARGET_KERNEL_MOD_VERSION}"
+    FLASHABLE_KERNEL_NAME="${TARGET_KERNEL_NAME}-${TARGET_DEVICE}-${CURRENT_DATE}-${TARGET_KERNEL_MOD_VERSION}"
 
     if [ $WITH_GCC == "1" ]; then
         FLASHABLE_KERNEL_NAME+="-gcc"
     fi
 
-    echo ' Removing old package file ';
+    echo " Removing old package file ";
     rm -rf $TARGET_OUT/$ANYKERNEL_PATH;
 
-    echo ' Getting AnyKernel ';
+    echo " Getting AnyKernel ";
     cp -r ./scripts/ak3 $TARGET_OUT/$ANYKERNEL_PATH
 
     cd $TARGET_OUT;
 
-    echo ' Setting device info ';
+    echo " Setting device info ";
     sed -i "s/DEVICE_PLACEHOLDER/${TARGET_DEVICE}/g" $ANYKERNEL_PATH/anykernel.sh
 
-    echo ' Copying Kernel File '; 
+    echo " Copying Kernel File ";
     cp -r $TARGET_KERNEL_FILE $ANYKERNEL_PATH/;
     # cp -r $TARGET_KERNEL_DTB $ANYKERNEL_PATH/;
     # cp -r $TARGET_KERNEL_DTBO $ANYKERNEL_PATH/;
 
-    echo ' Packaging flashable Kernel ';
+    echo " Packaging flashable Kernel ";
     cd $ANYKERNEL_PATH;
     zip -q -r ${FLASHABLE_KERNEL_NAME}.zip *;
-#
-   echo " Target File:  ../out/anykernel/${FLASHABLE_KERNEL_NAME}.zip ";
+
+    echo " Target File:  ../out/anykernel/${FLASHABLE_KERNEL_NAME}.zip ";
 }
 
 save_defconfig(){
@@ -132,6 +134,7 @@ clean(){
     make mrproper -j$THREAD;
     make clean -j$THREAD;
     rm -rf $TARGET_OUT;
+    git checkout HEAD drivers/input/touchscreen;
 }
 
 display_help() {
@@ -142,10 +145,10 @@ display_help() {
         echo "    all             Perform a build without cleaning."
         echo "    cleanbuild      Clean the source tree and build files then perform a all build."
         echo
-        echo "    flashable       Only generate the flashable zip file. Don't use it before you have built once."
-        echo "    savedefconfig   Save the defconfig file to source tree."
+        echo "    flashable        Only generate the flashable zip file. Don't use it before you have built once."
+        echo "    savedefconfig    Save the defconfig file to source tree."
         echo "    kernelonly      Only build kernel image"
-        echo "    defconfig       Only build kernel defconfig"
+        echo "    defconfig        Only build kernel defconfig"
         echo "    help ( -h )     Print help information."
         echo
         echo "    menuconfig      Graphic editor for kernel defconfig."
@@ -179,7 +182,6 @@ main(){
                              -j$THREAD \
                              O=$TARGET_OUT";
     else
-        echo $3
         echo "Building with clang"
         FINAL_KERNEL_BUILD_PARA="ARCH=$TARGET_ARCH \
                          CC=$TARGET_CC \
@@ -201,7 +203,7 @@ main(){
         display_help
     elif [ $1 == "savedefconfig" ]
     then
-       save_defconfig;
+        save_defconfig;
     elif [ $1 == "cleanbuild" ]
     then
         clean;

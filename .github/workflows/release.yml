@@ -1,0 +1,41 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 1
+
+      - name: Checkout proton-clang
+        uses: actions/checkout@v4
+        with:
+          repository: kdrag0n/proton-clang
+          path: toolchain
+          fetch-depth: 1
+
+      - name: Setup PATH
+        run: echo "${{ github.workspace }}/toolchain/bin" >> $GITHUB_PATH
+
+      - name: Install prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bash bc bison build-essential curl git zip ftp gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi libssl-dev lftp zstd wget libfl-dev python3 python-is-python3 libarchive-tools
+
+      - name: Build kernel
+        run: ./build.sh all renoir
+
+      - name: Upload kernel
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ github.workspace }}/../out/anykernel/*.zip
