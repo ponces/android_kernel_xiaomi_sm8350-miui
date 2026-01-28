@@ -51,7 +51,9 @@ static int _isdb_set(void *data, u64 val)
 	if (device->qdss_gfx_virt == NULL)
 		kgsl_qdss_gfx_register_probe(device);
 
+#if 0
 	device->set_isdb_breakpoint = val ? true : false;
+#endif
 	return 0;
 }
 
@@ -59,7 +61,9 @@ static int _isdb_get(void *data, u64 *val)
 {
 	struct kgsl_device *device = data;
 
+#if 0
 	*val = device->set_isdb_breakpoint ? 1 : 0;
+#endif
 	return 0;
 }
 
