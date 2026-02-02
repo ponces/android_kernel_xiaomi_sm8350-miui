@@ -41,7 +41,7 @@ TARGET_KERNEL_MOD_VERSION=$(make kernelversion)
 ANYKERNEL_PATH=anykernel
 
 DEFCONFIG_PATH=arch/arm64/configs
-DEFCONFIG_NAME="star_defconfig"
+DEFCONFIG_NAME="vendor/lahaina-qgki_defconfig vendor/xiaomi_QGKI.config vendor/renoir_QGKI.config"
 
 START_SEC=$(date +%s)
 CURRENT_DATE=$(date '+%Y%m%d')
