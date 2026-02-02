@@ -41,7 +41,7 @@ TARGET_KERNEL_MOD_VERSION=$(make kernelversion)
 ANYKERNEL_PATH=anykernel
 
 DEFCONFIG_PATH=arch/arm64/configs
-DEFCONFIG_NAME="vendor/lahaina-qgki_defconfig vendor/xiaomi_QGKI.config vendor/renoir_QGKI.config vendor/debugfs.config"
+DEFCONFIG_NAME="vendor/renoir_defconfig"
 
 START_SEC=$(date +%s)
 CURRENT_DATE=$(date '+%Y%m%d')
@@ -155,6 +155,7 @@ main() {
         link_all_dtb_files
         generate_flashable
     elif [ $1 == "defconfig" ]; then
+        DEFCONFIG_NAME="vendor/lahaina-qgki_defconfig vendor/xiaomi_QGKI.config vendor/renoir_QGKI.config vendor/debugfs.config"
         make_defconfig
     else
         display_help
