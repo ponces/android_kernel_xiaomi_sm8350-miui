@@ -133,28 +133,28 @@ display_help() {
 }
 
 main() {
-    if [ $1 == "help" -o $1 == "-h" ]; then
+    if [ -z "$1" ] || [ "$1" == "help" ] || [ "$1" == "-h" ]; then
         display_help
-    elif [ $1 == "savedefconfig" ]; then
+    elif [ "$1" == "savedefconfig" ]; then
         save_defconfig
-    elif [ $1 == "cleanbuild" ]; then
+    elif [ "$1" == "cleanbuild" ]; then
         clean
         make_defconfig
         build_kernel
         link_all_dtb_files
         generate_flashable
-    elif [ $1 == "flashable" ]; then
+    elif [ "$1" == "flashable" ]; then
         link_all_dtb_files
         generate_flashable
-    elif [ $1 == "kernelonly" ]; then
+    elif [ "$1" == "kernelonly" ]; then
         make_defconfig
         build_kernel
-    elif [ $1 == "all" ]; then
+    elif [ "$1" == "all" ]; then
         make_defconfig
         build_kernel
         link_all_dtb_files
         generate_flashable
-    elif [ $1 == "defconfig" ]; then
+    elif [ "$1" == "defconfig" ]; then
         DEFCONFIG_NAME="vendor/lahaina-qgki_defconfig vendor/xiaomi_QGKI.config vendor/renoir_QGKI.config vendor/debugfs.config"
         make_defconfig
     else
