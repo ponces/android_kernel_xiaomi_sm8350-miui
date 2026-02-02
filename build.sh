@@ -16,7 +16,7 @@ set -e
 
 TARGET_ARCH=arm64
 TARGET_CC=clang
-TRAGET_CLANG_TRIPLE=aarch64-linux-gnu-
+TARGET_CLANG_TRIPLE=aarch64-linux-gnu-
 TARGET_CROSS_COMPILE=aarch64-linux-gnu-
 TARGET_CROSS_COMPILE_COMPAT=arm-linux-gnueabi-
 THREAD=$(nproc --all)
@@ -35,7 +35,7 @@ FINAL_KERNEL_BUILD_PARA="ARCH=$TARGET_ARCH \
 TARGET_KERNEL_FILE=arch/arm64/boot/Image
 TARGET_KERNEL_DTB=arch/arm64/boot/dtb
 TARGET_KERNEL_DTBO=arch/arm64/boot/dtbo.img
-TARGET_KERNEL_NAME=Hana-kernel
+TARGET_KERNEL_NAME=Kernel
 TARGET_KERNEL_MOD_VERSION=$(make kernelversion)
 
 ANYKERNEL_PATH=anykernel
