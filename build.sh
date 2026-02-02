@@ -53,14 +53,6 @@ make_defconfig(){
     make $FINAL_KERNEL_BUILD_PARA $DEFCONFIG_NAME;
 }
 
-menu_config(){
-    echo "------------------------------";
-    echo " Building Kernel Defconfig..";
-    echo "------------------------------";
-
-    make $FINAL_KERNEL_BUILD_PARA menuconfig;
-}
-
 build_kernel(){
     echo "------------------------------";
     echo " Building Kernel ...........";
@@ -144,8 +136,6 @@ display_help() {
         echo "    defconfig        Only build kernel defconfig"
         echo "    help ( -h )     Print help information."
         echo
-        echo "    menuconfig      Graphic editor for kernel defconfig."
-        echo
         echo "Devices:"
         echo "    star            Xiaomi Mi 11 Ultra"
         echo "    renoir          Xiaomi Mi 11 Lite 5G"
@@ -225,9 +215,6 @@ main(){
             DEFCONFIG_NAME+=" vendor/with_gcc.config"
         fi
         make_defconfig;
-    elif [ $1 == "menuconfig" ]
-    then
-        menu_config;
     else
         display_help
     fi
