@@ -35,7 +35,7 @@ FINAL_KERNEL_BUILD_PARA="ARCH=$TARGET_ARCH \
 TARGET_KERNEL_FILE=arch/arm64/boot/Image
 TARGET_KERNEL_DTB=arch/arm64/boot/dtb
 TARGET_KERNEL_DTBO=arch/arm64/boot/dtbo.img
-TARGET_KERNEL_NAME=Kernel
+TARGET_KERNEL_NAME=Hana-kernel-renoir
 TARGET_KERNEL_MOD_VERSION=$(make kernelversion)
 
 ANYKERNEL_PATH=anykernel
@@ -67,7 +67,6 @@ build_kernel() {
     END_SEC=$(date +%s)
     COST_SEC=$[ $END_SEC-$START_SEC ]
     echo "Kernel Build Costed $(($COST_SEC/60))min $(($COST_SEC%60))s"
-
 }
 
 generate_flashable() {
@@ -105,7 +104,6 @@ save_defconfig() {
     echo "Moving kernel defconfig to source tree"
     mv $TARGET_OUT/defconfig $DEFCONFIG_PATH/$DEFCONFIG_NAME
     echo "Kernel Config Build Costed $(($COST_SEC/60))min $(($COST_SEC%60))s"
-
 }
 
 clean() {

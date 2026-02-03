@@ -4,7 +4,7 @@
 ### AnyKernel setup
 # global properties
 properties() { '
-kernel.string=Kernel for renoir by ponces @ Github
+kernel.string=Hana-kernel for renoir by EndCredits @ Github
 do.devicecheck=0
 do.modules=0
 do.systemless=1
