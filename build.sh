@@ -143,23 +143,25 @@ display_help() {
     echo
     echo "Build options:"
     echo "    all             Perform a build without cleaning that generates a flashable kernel and a boot image."
-    echo "    cleanbuild      Clean the source tree and build files then perform a all build."
+    echo "    cleanbuild      Clean the source tree and build files then perform an 'all' build."
     echo
-    echo "    savedefconfig    Save the defconfig file to source tree."
     echo "    kernelonly      Only build kernel image"
     echo "    defconfig        Only build kernel defconfig"
-    echo "    help ( -h )     Print help information."
+    echo "    savedefconfig    Save the defconfig file to source tree."
+    echo "    clean           Clean the source tree and build files"
+    echo "    help            Print help information."
     echo
 }
 
 main() {
-    if [ -z "$1" ] || [ "$1" == "help" ] || [ "$1" == "-h" ]; then
+    if [ -z "$1" ] || [ "$1" == "help" ]; then
         display_help
-    elif [ "$1" == "savedefconfig" ]; then
-        save_defconfig
-    elif [ "$1" == "defconfig" ]; then
-        DEFCONFIG_NAME="vendor/lahaina-qgki_defconfig vendor/xiaomi_QGKI.config vendor/renoir_QGKI.config vendor/debugfs.config"
+    elif [ "$1" == "all" ]; then
         make_defconfig
+        build_kernel
+        link_all_dtb_files
+        generate_flashable
+        generate_bootimg
     elif [ "$1" == "cleanbuild" ]; then
         clean
         make_defconfig
@@ -170,12 +172,13 @@ main() {
     elif [ "$1" == "kernelonly" ]; then
         make_defconfig
         build_kernel
-    elif [ "$1" == "all" ]; then
+    elif [ "$1" == "defconfig" ]; then
+        DEFCONFIG_NAME="vendor/lahaina-qgki_defconfig vendor/xiaomi_QGKI.config vendor/renoir_QGKI.config vendor/debugfs.config"
         make_defconfig
-        build_kernel
-        link_all_dtb_files
-        generate_flashable
-        generate_bootimg
+    elif [ "$1" == "savedefconfig" ]; then
+        save_defconfig
+    elif [ "$1" == "clean" ]; then
+        clean
     else
         display_help
     fi
