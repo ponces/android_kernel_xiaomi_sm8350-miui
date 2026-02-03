@@ -23,7 +23,7 @@ jobs:
       - name: Install prerequisites
         run: |
           sudo apt-get update
-          sudo apt-get install -y bc bison build-essential clang curl flex git libssl-dev lld llvm python3 python-is-python3 zip
+          sudo apt-get install -y bc bison build-essential clang curl flex git libssl-dev lld llvm python3 python-is-python3 zip zstd
 
       - name: Build kernel
         run: |
@@ -33,5 +33,7 @@ jobs:
       - name: Upload kernel
         uses: actions/upload-artifact@v4
         with:
-          name: anykernel
-          path: ${{ github.workspace }}/out/anykernel/*.zip
+          name: renoir
+          path: |
+            ${{ github.workspace }}/out/anykernel/Hana-kernel-renoir-*.zip
+            ${{ github.workspace }}/out/magisk/Hana-kernel-renoir-*.img

@@ -24,7 +24,7 @@ jobs:
       - name: Install prerequisites
         run: |
           sudo apt-get update
-          sudo apt-get install -y bc bison build-essential clang curl flex git libssl-dev lld llvm python3 python-is-python3 zip
+          sudo apt-get install -y bc bison build-essential clang curl flex git libssl-dev lld llvm python3 python-is-python3 zip zstd
 
       - name: Build kernel
         run: |
@@ -34,4 +34,6 @@ jobs:
       - name: Upload kernel
         uses: softprops/action-gh-release@v2
         with:
-          files: ${{ github.workspace }}/out/anykernel/*.zip
+          files: |
+            ${{ github.workspace }}/out/anykernel/Hana-kernel-renoir-*.zip
+            ${{ github.workspace }}/out/magisk/Hana-kernel-renoir-*.img

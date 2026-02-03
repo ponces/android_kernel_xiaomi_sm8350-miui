@@ -35,15 +35,16 @@ FINAL_KERNEL_BUILD_PARA="ARCH=$TARGET_ARCH \
 TARGET_KERNEL_FILE=arch/arm64/boot/Image
 TARGET_KERNEL_DTB=arch/arm64/boot/dtb
 TARGET_KERNEL_DTBO=arch/arm64/boot/dtbo.img
+TARGET_KERNEL_BOOT=boot.img
 TARGET_KERNEL_NAME=Hana-kernel-renoir
 TARGET_KERNEL_MOD_VERSION=$(make kernelversion)
 
 ANYKERNEL_PATH=anykernel
+MAGISKBOOT_PATH=magisk
 
 DEFCONFIG_PATH=arch/arm64/configs
 DEFCONFIG_NAME="vendor/renoir_defconfig"
 
-START_SEC=$(date +%s)
 CURRENT_DATE=$(date '+%Y%m%d')
 
 link_all_dtb_files() {
@@ -52,26 +53,32 @@ link_all_dtb_files() {
 
 make_defconfig() {
     echo "------------------------------"
-    echo " Building Kernel Defconfig.."
+    echo " Building kernel defconfig     "
     echo "------------------------------"
 
     make $FINAL_KERNEL_BUILD_PARA $DEFCONFIG_NAME
 }
 
+save_defconfig() {
+    echo "------------------------------"
+    echo " Saving kernel config          "
+    echo "------------------------------"
+
+    make $FINAL_KERNEL_BUILD_PARA savedefconfig
+    mv $TARGET_OUT/defconfig $DEFCONFIG_PATH/$DEFCONFIG_NAME
+}
+
 build_kernel() {
     echo "------------------------------"
-    echo " Building Kernel ..........."
+    echo " Building kernel              "
     echo "------------------------------"
 
     make $FINAL_KERNEL_BUILD_PARA
-    END_SEC=$(date +%s)
-    COST_SEC=$[ $END_SEC-$START_SEC ]
-    echo "Kernel Build Costed $(($COST_SEC/60))min $(($COST_SEC%60))s"
 }
 
 generate_flashable() {
     echo "------------------------------"
-    echo " Generating Flashable Kernel"
+    echo " Generating flashable kernel   "
     echo "------------------------------"
 
     echo " Removing old package file "
@@ -80,34 +87,50 @@ generate_flashable() {
     echo " Getting AnyKernel "
     cp -r ./scripts/ak3 $TARGET_OUT/$ANYKERNEL_PATH
 
-    cd $TARGET_OUT
+    echo " Copying kernel file "
+    cp -r $TARGET_OUT/$TARGET_KERNEL_FILE $TARGET_OUT/$ANYKERNEL_PATH/Image
 
-    echo " Copying Kernel File "
-    cp -r $TARGET_KERNEL_FILE $ANYKERNEL_PATH/
-
-    echo " Packaging flashable Kernel "
-    cd $ANYKERNEL_PATH
+    echo " Packaging flashable kernel "
+    pushd $TARGET_OUT/$ANYKERNEL_PATH >/dev/null
     zip -q -r $TARGET_KERNEL_NAME-$CURRENT_DATE-$TARGET_KERNEL_MOD_VERSION.zip *
+    popd >/dev/null
 
-    echo " Target File: $TARGET_OUT/$ANYKERNEL_PATH/$TARGET_KERNEL_NAME-$CURRENT_DATE-$TARGET_KERNEL_MOD_VERSION.zip "
+    echo " Result: $TARGET_OUT/$ANYKERNEL_PATH/$TARGET_KERNEL_NAME-$CURRENT_DATE-$TARGET_KERNEL_MOD_VERSION.zip "
 }
 
-save_defconfig() {
+generate_bootimg() {
     echo "------------------------------"
-    echo " Saving kernel config ........"
+    echo " Generating boot image        "
     echo "------------------------------"
 
-    make $FINAL_KERNEL_BUILD_PARA savedefconfig
-    END_SEC=$(date +%s)
-    COST_SEC=$[ $END_SEC-$START_SEC ]
-    echo "Finished. Kernel config saved to $TARGET_OUT/defconfig"
-    echo "Moving kernel defconfig to source tree"
-    mv $TARGET_OUT/defconfig $DEFCONFIG_PATH/$DEFCONFIG_NAME
-    echo "Kernel Config Build Costed $(($COST_SEC/60))min $(($COST_SEC%60))s"
+    echo " Removing old boot files "
+    rm -rf $TARGET_OUT/$MAGISKBOOT_PATH
+
+    echo " Getting magiskboot "
+    cp -r ./tools/magisk $TARGET_OUT/$MAGISKBOOT_PATH
+
+    echo " Copying kernel file "
+    cp -r $TARGET_OUT/$TARGET_KERNEL_FILE $TARGET_OUT/$MAGISKBOOT_PATH/kernel
+
+    echo " Unpacking original boot image "
+    pushd $TARGET_OUT/$MAGISKBOOT_PATH >/dev/null
+    zstd -d $TARGET_KERNEL_BOOT.zst
+    mv kernel new-kernel
+    ./magiskboot unpack $TARGET_KERNEL_BOOT
+    mv new-kernel kernel
+
+    echo " Repacking boot image "
+    ./magiskboot repack $TARGET_KERNEL_BOOT $TARGET_KERNEL_NAME-$CURRENT_DATE-$TARGET_KERNEL_MOD_VERSION.img
+    popd >/dev/null
+
+    echo " Result: $TARGET_OUT/$MAGISKBOOT_PATH/$TARGET_KERNEL_NAME-$CURRENT_DATE-$TARGET_KERNEL_MOD_VERSION.img "
 }
 
 clean() {
-    echo "Clean source tree and build files..."
+    echo "------------------------------"
+    echo " Cleaning source tree         "
+    echo "------------------------------"
+
     make mrproper -j$THREAD
     make clean -j$THREAD
     rm -rf $TARGET_OUT
@@ -119,10 +142,9 @@ display_help() {
     echo "usage: build.sh <build option>"
     echo
     echo "Build options:"
-    echo "    all             Perform a build without cleaning."
+    echo "    all             Perform a build without cleaning that generates a flashable kernel and a boot image."
     echo "    cleanbuild      Clean the source tree and build files then perform a all build."
     echo
-    echo "    flashable        Only generate the flashable zip file. Don't use it before you have built once."
     echo "    savedefconfig    Save the defconfig file to source tree."
     echo "    kernelonly      Only build kernel image"
     echo "    defconfig        Only build kernel defconfig"
@@ -135,15 +157,16 @@ main() {
         display_help
     elif [ "$1" == "savedefconfig" ]; then
         save_defconfig
+    elif [ "$1" == "defconfig" ]; then
+        DEFCONFIG_NAME="vendor/lahaina-qgki_defconfig vendor/xiaomi_QGKI.config vendor/renoir_QGKI.config vendor/debugfs.config"
+        make_defconfig
     elif [ "$1" == "cleanbuild" ]; then
         clean
         make_defconfig
         build_kernel
         link_all_dtb_files
         generate_flashable
-    elif [ "$1" == "flashable" ]; then
-        link_all_dtb_files
-        generate_flashable
+        generate_bootimg
     elif [ "$1" == "kernelonly" ]; then
         make_defconfig
         build_kernel
@@ -152,9 +175,7 @@ main() {
         build_kernel
         link_all_dtb_files
         generate_flashable
-    elif [ "$1" == "defconfig" ]; then
-        DEFCONFIG_NAME="vendor/lahaina-qgki_defconfig vendor/xiaomi_QGKI.config vendor/renoir_QGKI.config vendor/debugfs.config"
-        make_defconfig
+        generate_bootimg
     else
         display_help
     fi
