@@ -1,0 +1,39 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - dev
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 1
+
+      - name: Install prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bc bison build-essential clang curl flex git libssl-dev lld llvm python3 python-is-python3 zip zstd
+
+      - name: Build kernel
+        run: |
+          ./build.sh all
+          mv ${{ github.workspace }}/../out ${{ github.workspace }}/out
+
+      - name: Upload kernel
+        uses: actions/upload-artifact@v4
+        with:
+          name: renoir
+          path: |
+            ${{ github.workspace }}/out/anykernel/Hana-kernel-renoir-*.zip
+            ${{ github.workspace }}/out/magisk/Hana-kernel-renoir-*.img
