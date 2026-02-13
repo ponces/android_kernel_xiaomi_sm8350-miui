@@ -64,6 +64,7 @@
 #include <linux/rcuwait.h>
 #include <linux/compat.h>
 #include <linux/sysfs.h>
+#include <linux/usermode_driver.h>
 
 #include <linux/uaccess.h>
 #include <asm/unistd.h>
@@ -859,7 +860,8 @@ void __noreturn do_exit(long code)
 	exit_task_namespaces(tsk);
 	exit_task_work(tsk);
 	exit_thread(tsk);
-	exit_umh(tsk);
+	if (group_dead)
+		exit_umh(tsk);
 
 	/*
 	 * Flush inherited counters to the parent - before the parent

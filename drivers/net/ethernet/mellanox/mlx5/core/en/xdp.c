@@ -64,7 +64,7 @@ mlx5e_xmit_xdp_buff(struct mlx5e_xdpsq *sq, struct mlx5e_rq *rq,
 	struct xdp_frame *xdpf;
 	dma_addr_t dma_addr;
 
-	xdpf = convert_to_xdp_frame(xdp);
+	xdpf = xdp_convert_buff_to_frame(xdp);
 	if (unlikely(!xdpf))
 		return false;
 
