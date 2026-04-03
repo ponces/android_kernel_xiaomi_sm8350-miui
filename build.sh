@@ -173,7 +173,7 @@ main() {
         make_defconfig
         build_kernel
     elif [ "$1" == "defconfig" ]; then
-        DEFCONFIG_NAME="vendor/lahaina-qgki_defconfig vendor/xiaomi_QGKI.config vendor/renoir_QGKI.config vendor/debugfs.config"
+        DEFCONFIG_NAME="vendor/lahaina-qgki_defconfig vendor/xiaomi_QGKI.config vendor/renoir_QGKI.config vendor/debugfs.config droidspaces.config"
         make_defconfig
     elif [ "$1" == "savedefconfig" ]; then
         save_defconfig
