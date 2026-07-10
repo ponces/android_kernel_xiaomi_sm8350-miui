@@ -15,7 +15,6 @@ static const struct adreno_gpu_core adreno_gpu_core_##_name = { \
 	.features = ADRENO_DEPRECATED, \
 }
 
-#if 0
 static const struct adreno_reglist a306_vbif_regs[] = {
 	{ A3XX_VBIF_ROUND_ROBIN_QOS_ARB, 0x0003 },
 	{ A3XX_VBIF_OUT_RD_LIM_CONF0, 0x0000000A },
@@ -30,6 +29,7 @@ static const struct adreno_a3xx_core adreno_gpu_core_a306 = {
 		.perfcounters = &adreno_a3xx_perfcounters,
 		.gmem_size = SZ_128K,
 		.bus_width = 0,
+		.snapshot_size = 600 * SZ_1K,
 	},
 	.pm4fw_name = "a300_pm4.fw",
 	.pfpfw_name = "a300_pfp.fw",
@@ -51,6 +51,7 @@ static const struct adreno_a3xx_core adreno_gpu_core_a306a = {
 		.perfcounters = &adreno_a3xx_perfcounters,
 		.gmem_size = SZ_128K,
 		.bus_width = 16,
+		.snapshot_size = 600 * SZ_1K,
 	},
 	.pm4fw_name = "a300_pm4.fw",
 	.pfpfw_name = "a300_pfp.fw",
@@ -70,6 +71,7 @@ static const struct adreno_a3xx_core adreno_gpu_core_a304 = {
 		.perfcounters = &adreno_a3xx_perfcounters,
 		.gmem_size = (SZ_64K + SZ_32K),
 		.bus_width = 0,
+		.snapshot_size = 600 * SZ_1K,
 	},
 	.pm4fw_name = "a300_pm4.fw",
 	.pfpfw_name = "a300_pfp.fw",
@@ -193,6 +195,7 @@ static const struct adreno_a5xx_core adreno_gpu_core_a530v2 = {
 		.perfcounters = &adreno_a5xx_perfcounters,
 		.gmem_size = SZ_1M,
 		.bus_width = 32,
+		.snapshot_size = SZ_1M,
 	},
 	.gpmu_tsens = 0x00060007,
 	.max_power = 5448,
@@ -218,6 +221,7 @@ static const struct adreno_a5xx_core adreno_gpu_core_a530v3 = {
 		.perfcounters = &adreno_a5xx_perfcounters,
 		.gmem_size = SZ_1M,
 		.bus_width = 32,
+		.snapshot_size = SZ_1M,
 	},
 	.gpmu_tsens = 0x00060007,
 	.max_power = 5448,
@@ -283,6 +287,7 @@ static const struct adreno_a5xx_core adreno_gpu_core_a505 = {
 		.perfcounters = &adreno_a5xx_perfcounters,
 		.gmem_size = (SZ_128K + SZ_8K),
 		.bus_width = 16,
+		.snapshot_size = SZ_1M,
 	},
 	.pm4fw_name = "a530_pm4.fw",
 	.pfpfw_name = "a530_pfp.fw",
@@ -301,6 +306,7 @@ static const struct adreno_a5xx_core adreno_gpu_core_a506 = {
 		.perfcounters = &adreno_a5xx_perfcounters,
 		.gmem_size = (SZ_128K + SZ_8K),
 		.bus_width = 16,
+		.snapshot_size = SZ_1M,
 	},
 	.pm4fw_name = "a530_pm4.fw",
 	.pfpfw_name = "a530_pfp.fw",
@@ -378,6 +384,7 @@ static const struct adreno_a5xx_core adreno_gpu_core_a510 = {
 		.perfcounters = &adreno_a5xx_perfcounters,
 		.gmem_size = SZ_256K,
 		.bus_width = 16,
+		.snapshot_size = SZ_1M,
 	},
 	.pm4fw_name = "a530_pm4.fw",
 	.pfpfw_name = "a530_pfp.fw",
@@ -502,6 +509,7 @@ static const struct adreno_a5xx_core adreno_gpu_core_a540v2 = {
 		.perfcounters = &adreno_a5xx_perfcounters,
 		.gmem_size = SZ_1M,
 		.bus_width = 32,
+		.snapshot_size = SZ_1M,
 	},
 	.gpmu_tsens = 0x000c000d,
 	.max_power = 5448,
@@ -584,6 +592,7 @@ static const struct adreno_a5xx_core adreno_gpu_core_a512 = {
 		.perfcounters = &adreno_a5xx_perfcounters,
 		.gmem_size = (SZ_256K + SZ_16K),
 		.bus_width = 32,
+		.snapshot_size = SZ_1M,
 	},
 	.pm4fw_name = "a530_pm4.fw",
 	.pfpfw_name = "a530_pfp.fw",
@@ -602,6 +611,7 @@ static const struct adreno_a5xx_core adreno_gpu_core_a508 = {
 		.perfcounters = &adreno_a5xx_perfcounters,
 		.gmem_size = (SZ_128K + SZ_8K),
 		.bus_width = 32,
+		.snapshot_size = SZ_1M,
 	},
 	.pm4fw_name = "a530_pm4.fw",
 	.pfpfw_name = "a530_pfp.fw",
@@ -776,6 +786,7 @@ static const struct adreno_a6xx_core adreno_gpu_core_a630v2 = {
 		.perfcounters = &adreno_a630_perfcounters,
 		.gmem_size = SZ_1M,
 		.bus_width = 32,
+		.snapshot_size = SZ_1M,
 	},
 	.prim_fifo_threshold = 0x0018000,
 	.gmu_major = 1,
@@ -874,6 +885,7 @@ static const struct adreno_a6xx_core adreno_gpu_core_a615 = {
 		.perfcounters = &adreno_a6xx_legacy_perfcounters,
 		.gmem_size = SZ_512K,
 		.bus_width = 32,
+		.snapshot_size = 600 * SZ_1K,
 	},
 	.prim_fifo_threshold = 0x0018000,
 	.gmu_major = 1,
@@ -900,6 +912,7 @@ static const struct adreno_a6xx_core adreno_gpu_core_a618 = {
 		.perfcounters = &adreno_a6xx_legacy_perfcounters,
 		.gmem_size = SZ_512K,
 		.bus_width = 32,
+		.snapshot_size = SZ_1M,
 	},
 	.prim_fifo_threshold = 0x0018000,
 	.gmu_major = 1,
@@ -926,6 +939,7 @@ static const struct adreno_a6xx_core adreno_gpu_core_a619 = {
 		.perfcounters = &adreno_a6xx_legacy_perfcounters,
 		.gmem_size = SZ_512K,
 		.bus_width = 32,
+		.snapshot_size = SZ_2M,
 	},
 	.prim_fifo_threshold = 0x0018000,
 	.gmu_major = 1,
@@ -951,6 +965,7 @@ static const struct adreno_a6xx_core adreno_gpu_core_a619_variant = {
 		.perfcounters = &adreno_a6xx_legacy_perfcounters,
 		.gmem_size = SZ_512K,
 		.bus_width = 32,
+		.snapshot_size = SZ_2M,
 	},
 	.prim_fifo_threshold = 0x0018000,
 	.sqefw_name = "a630_sqe.fw",
@@ -1017,8 +1032,6 @@ static const struct adreno_reglist a620_hwcg_regs[] = {
 	{A6XX_RBBM_CLOCK_HYST_GMU_GX, 0x00000555},
 };
 
-#endif
-
 /* a620 and a650 */
 static const struct adreno_reglist a650_gbif_regs[] = {
 	{A6XX_GBIF_QSB_SIDE0, 0x00071620},
@@ -1027,8 +1040,6 @@ static const struct adreno_reglist a650_gbif_regs[] = {
 	{A6XX_GBIF_QSB_SIDE3, 0x00071620},
 	{A6XX_RBBM_GBIF_CLIENT_QOS_CNTL, 0x3},
 };
-
-#if 0
 
 /* These are for a620 and a650 */
 static const struct a6xx_protected_regs a620_protected_regs[] = {
@@ -1086,6 +1097,7 @@ static const struct adreno_a6xx_core adreno_gpu_core_a620 = {
 		.perfcounters = &adreno_a6xx_perfcounters,
 		.gmem_size = SZ_512K,
 		.bus_width = 32,
+		.snapshot_size = 2 * SZ_1M,
 	},
 	.prim_fifo_threshold = 0x0010000,
 	.gmu_major = 2,
@@ -1230,6 +1242,7 @@ static const struct adreno_a6xx_core adreno_gpu_core_a640 = {
 		.perfcounters = &adreno_a6xx_legacy_perfcounters,
 		.gmem_size = SZ_1M, //Verified 1MB
 		.bus_width = 32,
+		.snapshot_size = 2 * SZ_1M,
 	},
 	.prim_fifo_threshold = 0x00200000,
 	.gmu_major = 2,
@@ -1309,6 +1322,7 @@ static const struct adreno_a6xx_core adreno_gpu_core_a650 = {
 		.perfcounters = &adreno_a6xx_perfcounters,
 		.gmem_size = SZ_1M + SZ_128K, /* verified 1152kB */
 		.bus_width = 32,
+		.snapshot_size = 2 * SZ_1M,
 	},
 	.prim_fifo_threshold = 0x00300000,
 	.gmu_major = 2,
@@ -1337,6 +1351,7 @@ static const struct adreno_a6xx_core adreno_gpu_core_a650v2 = {
 		.perfcounters = &adreno_a6xx_perfcounters,
 		.gmem_size = SZ_1M + SZ_128K, /* verified 1152kB */
 		.bus_width = 32,
+		.snapshot_size = 2 * SZ_1M,
 	},
 	.prim_fifo_threshold = 0x00300000,
 	.gmu_major = 2,
@@ -1364,6 +1379,7 @@ static const struct adreno_a6xx_core adreno_gpu_core_a680 = {
 		.perfcounters = &adreno_a6xx_legacy_perfcounters,
 		.gmem_size = SZ_2M,
 		.bus_width = 32,
+		.snapshot_size = SZ_2M,
 	},
 	.prim_fifo_threshold = 0x00400000,
 	.gmu_major = 2,
@@ -1440,6 +1456,7 @@ static const struct adreno_a6xx_core adreno_gpu_core_a612 = {
 		.perfcounters = &adreno_a6xx_legacy_perfcounters,
 		.gmem_size = (SZ_128K + SZ_4K),
 		.bus_width = 32,
+		.snapshot_size = SZ_1M,
 	},
 	.prim_fifo_threshold = 0x00080000,
 	.sqefw_name = "a630_sqe.fw",
@@ -1464,6 +1481,7 @@ static const struct adreno_a6xx_core adreno_gpu_core_a616 = {
 		.perfcounters = &adreno_a6xx_legacy_perfcounters,
 		.gmem_size = SZ_512K,
 		.bus_width = 32,
+		.snapshot_size = SZ_1M,
 	},
 	.prim_fifo_threshold = 0x0018000,
 	.gmu_major = 1,
@@ -1501,8 +1519,6 @@ static const struct adreno_a6xx_core adreno_gpu_core_a610 = {
 	.protected_regs = a630_protected_regs,
 	.highest_bank_bit = 14,
 };
-
-#endif
 
 static const struct adreno_reglist a660_hwcg_regs[] = {
 	{A6XX_RBBM_CLOCK_CNTL_SP0, 0x02222222},
@@ -1613,6 +1629,7 @@ static const struct adreno_a6xx_core adreno_gpu_core_a660 = {
 		.perfcounters = &adreno_a6xx_perfcounters,
 		.gmem_size = SZ_1M + SZ_512K,
 		.bus_width = 32,
+		.snapshot_size = SZ_2M,
 	},
 	.prim_fifo_threshold = 0x00300000,
 	.gmu_major = 2,
@@ -1644,6 +1661,7 @@ static const struct adreno_a6xx_core adreno_gpu_core_a660v2 = {
 		.perfcounters = &adreno_a6xx_perfcounters,
 		.gmem_size = SZ_1M + SZ_512K,
 		.bus_width = 32,
+		.snapshot_size = SZ_2M,
 	},
 	.prim_fifo_threshold = 0x00300000,
 	.gmu_major = 2,
@@ -1676,6 +1694,7 @@ static const struct adreno_a6xx_core adreno_gpu_core_a642 = {
 		.perfcounters = &adreno_a6xx_perfcounters,
 		.gmem_size = SZ_1M + SZ_512K,
 		.bus_width = 32,
+		.snapshot_size = SZ_2M,
 	},
 	.prim_fifo_threshold = 0x00300000,
 	.gmu_major = 2,
@@ -1708,6 +1727,7 @@ static const struct adreno_a6xx_core adreno_gpu_core_a642l = {
 		.perfcounters = &adreno_a6xx_perfcounters,
 		.gmem_size = SZ_512K,
 		.bus_width = 32,
+		.snapshot_size = SZ_2M,
 	},
 	.prim_fifo_threshold = 0x00200000,
 	.gmu_major = 2,
@@ -1740,6 +1760,7 @@ static const struct adreno_a6xx_core adreno_gpu_core_a643 = {
 		.perfcounters = &adreno_a6xx_perfcounters,
 		.gmem_size = SZ_512K,
 		.bus_width = 32,
+		.snapshot_size = SZ_2M,
 	},
 	.prim_fifo_threshold = 0x00200000,
 	.gmu_major = 2,
@@ -1759,7 +1780,6 @@ static const struct adreno_a6xx_core adreno_gpu_core_a643 = {
 	.pdc_in_aop = true,
 	.ctxt_record_size = 2496 * 1024,
 };
-#if 0
 
 static const struct adreno_reglist a702_hwcg_regs[] = {
 	{A6XX_RBBM_CLOCK_CNTL_SP0, 0x22222222},
@@ -1828,6 +1848,7 @@ static const struct adreno_a6xx_core adreno_gpu_core_a702 = {
 		.perfcounters = &adreno_a6xx_legacy_perfcounters,
 		.gmem_size = SZ_128K,
 		.bus_width = 16,
+		.snapshot_size = SZ_1M,
 	},
 	.prim_fifo_threshold = 0x0000c000,
 	.sqefw_name = "a702_sqe.fw",
@@ -1841,9 +1862,42 @@ static const struct adreno_a6xx_core adreno_gpu_core_a702 = {
 	.highest_bank_bit = 14,
 };
 
-#endif
-
 static const struct adreno_gpu_core *adreno_gpulist[] = {
+	&adreno_gpu_core_a306.base,
+	&adreno_gpu_core_a306a.base,
+	&adreno_gpu_core_a304.base,
+	&adreno_gpu_core_a405,		/* Deprecated */
+	&adreno_gpu_core_a418,		/* Deprecated */
+	&adreno_gpu_core_a420,		/* Deprecated */
+	&adreno_gpu_core_a430,		/* Deprecated */
+	&adreno_gpu_core_a530v1,	/* Deprecated */
+	&adreno_gpu_core_a530v2.base,
+	&adreno_gpu_core_a530v3.base,
+	&adreno_gpu_core_a505.base,
+	&adreno_gpu_core_a506.base,
+	&adreno_gpu_core_a510.base,
+	&adreno_gpu_core_a540v1,	/* Deprecated */
+	&adreno_gpu_core_a540v2.base,
+	&adreno_gpu_core_a512.base,
+	&adreno_gpu_core_a508.base,
+	&adreno_gpu_core_a630v1,	/* Deprecated */
+	&adreno_gpu_core_a630v2.base,
+	&adreno_gpu_core_a615.base,
+	&adreno_gpu_core_a618.base,
+	&adreno_gpu_core_a619.base,
+	&adreno_gpu_core_a619_variant.base,
+	&adreno_gpu_core_a620.base,
+	&adreno_gpu_core_a640.base,
+	&adreno_gpu_core_a650.base,
+	&adreno_gpu_core_a650v2.base,
 	&adreno_gpu_core_a660.base,
 	&adreno_gpu_core_a660v2.base,
+	&adreno_gpu_core_a680.base,
+	&adreno_gpu_core_a612.base,
+	&adreno_gpu_core_a616.base,
+	&adreno_gpu_core_a610.base,
+	&adreno_gpu_core_a642.base,
+	&adreno_gpu_core_a642l.base,
+	&adreno_gpu_core_a643.base,
+	&adreno_gpu_core_a702.base,
 };
