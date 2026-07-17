@@ -1,0 +1,14 @@
+{
+  "features": {
+    "ghcr.io/devcontainer-community/devcontainer-features/chezmoi.io:1": {
+      "version": "1.0.4",
+      "resolved": "ghcr.io/devcontainer-community/devcontainer-features/chezmoi.io@sha256:a8a87d060a05ff51d292f8d9ee004a485b607fbcc8739e71ae0dd704ac64e1dd",
+      "integrity": "sha256:a8a87d060a05ff51d292f8d9ee004a485b607fbcc8739e71ae0dd704ac64e1dd"
+    },
+    "ghcr.io/nils-geistmann/devcontainers-features/zsh": {
+      "version": "0.0.8",
+      "resolved": "ghcr.io/nils-geistmann/devcontainers-features/zsh@sha256:fd57a61a5187480b5e73f8041be5b67005be48f06503736df6cfdd8d0f38f3c4",
+      "integrity": "sha256:fd57a61a5187480b5e73f8041be5b67005be48f06503736df6cfdd8d0f38f3c4"
+    }
+  }
+}

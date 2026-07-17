@@ -28,8 +28,7 @@ jobs:
 
       - name: Build kernel
         run: |
-          ./build.sh all
-          mv ${{ github.workspace }}/../out ${{ github.workspace }}/out
+          bash build.sh all
 
       - name: Upload kernel
         uses: softprops/action-gh-release@v2
