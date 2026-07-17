@@ -87,6 +87,7 @@ modules.order
 #
 !.clang-format
 !.cocciconfig
+!.devcontainer
 !.get_maintainer.ignore
 !.gitattributes
 !.gitignore
@@ -155,3 +156,6 @@ arch/arm/boot/dts/vendor
 #Ignoring Android.bp link file
 #
 Android.bp
+
+# output directories
+/out
