@@ -21,7 +21,7 @@ TARGET_CROSS_COMPILE=aarch64-linux-gnu-
 TARGET_CROSS_COMPILE_COMPAT=arm-linux-gnueabi-
 THREAD=$(nproc --all)
 CC_ADDITIONAL_FLAGS="LLVM_IAS=1 LLVM=1"
-TARGET_OUT="../out"
+TARGET_OUT="./out"
 
 FINAL_KERNEL_BUILD_PARA="ARCH=$TARGET_ARCH \
                          CC=$TARGET_CC \

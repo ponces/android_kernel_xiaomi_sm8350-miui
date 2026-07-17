@@ -1,0 +1,27 @@
+{
+    "name": "android_kernel_xiaomi_sm8350-miui",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": ".."
+    },
+    "remoteUser": "ubuntu",
+    "features": {
+        "ghcr.io/nils-geistmann/devcontainers-features/zsh": {
+            "theme": "robbyrussell",
+            "plugins": "git git-auto-fetch gradle repo"
+        },
+        "ghcr.io/devcontainer-community/devcontainer-features/chezmoi.io:1": {}
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "eamodio.gitlens",
+                "embeddedlinuxexperts.git-repo",
+                "ms-vscode.cpptools",
+                "yewco.android-blueprint"
+            ]
+        }
+    },
+    "updateContentCommand": "git submodule update --init --recursive",
+    "postCreateCommand": "chezmoi init --apply gitlab.com/ponces --promptDefaults"
+}
