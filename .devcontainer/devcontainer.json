@@ -3,7 +3,7 @@
     "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
     "features": {
         "ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {
-            "packages": "bc,bison,build-essential,ca-certificates,clang,curl,flex,fzf,git,jq,libssl-dev,lld,llvm,nano,procps,python3,python-is-python3,tar,unzip,wget,zip,zstd",
+            "packages": "bc,bison,build-essential,ca-certificates,clang,cpio,curl,flex,fzf,git,jq,libssl-dev,lld,llvm,nano,procps,python3,python-is-python3,tar,unzip,wget,zip,zstd",
             "upgradePackages": false
         },
         "ghcr.io/nils-geistmann/devcontainers-features/zsh:0": {
