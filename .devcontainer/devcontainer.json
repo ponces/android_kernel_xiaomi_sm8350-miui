@@ -1,15 +1,16 @@
 {
     "name": "android_kernel_xiaomi_sm8350-miui",
-    "build": {
-        "dockerfile": "Dockerfile",
-        "context": ".."
-    },
-    "remoteUser": "ubuntu",
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
     "features": {
-        "ghcr.io/nils-geistmann/devcontainers-features/zsh": {
+        "ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {
+            "packages": "bc,bison,build-essential,ca-certificates,clang,curl,flex,fzf,git,jq,libssl-dev,lld,llvm,nano,procps,python3,python-is-python3,tar,unzip,wget,zip,zstd",
+            "upgradePackages": false
+        },
+        "ghcr.io/nils-geistmann/devcontainers-features/zsh:0": {
             "theme": "robbyrussell",
             "plugins": "git git-auto-fetch gradle repo"
         },
+        "ghcr.io/stuartleeks/dev-container-features/shell-history:0": {},
         "ghcr.io/devcontainer-community/devcontainer-features/chezmoi.io:1": {}
     },
     "customizations": {
@@ -18,7 +19,7 @@
                 "eamodio.gitlens",
                 "embeddedlinuxexperts.git-repo",
                 "ms-vscode.cpptools",
-                "yewco.android-blueprint"
+                "ms-vscode.makefile-tools"
             ]
         }
     },
