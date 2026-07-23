@@ -23,6 +23,9 @@
             ]
         }
     },
+    "containerEnv": {
+        "CLANG_VERSION": "r563880c"
+    },
     "updateContentCommand": "git submodule update --init --recursive",
     "postCreateCommand": "chezmoi init --apply gitlab.com/ponces --promptDefaults"
 }

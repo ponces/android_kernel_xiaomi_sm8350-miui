@@ -159,3 +159,6 @@ Android.bp
 
 # output directories
 /out
+
+# toolchains directory
+/toolchains
