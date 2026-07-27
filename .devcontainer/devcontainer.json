@@ -11,7 +11,7 @@
             "plugins": "git git-auto-fetch gradle repo"
         },
         "ghcr.io/stuartleeks/dev-container-features/shell-history:0": {},
-        "ghcr.io/devcontainer-community/devcontainer-features/chezmoi.io:1": {}
+        "ghcr.io/prulloac/devcontainer-features/chezmoi:1": {}
     },
     "customizations": {
         "vscode": {

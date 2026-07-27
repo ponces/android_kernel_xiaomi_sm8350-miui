@@ -1,14 +1,14 @@
 {
   "features": {
-    "ghcr.io/devcontainer-community/devcontainer-features/chezmoi.io:1": {
-      "version": "1.0.4",
-      "resolved": "ghcr.io/devcontainer-community/devcontainer-features/chezmoi.io@sha256:a8a87d060a05ff51d292f8d9ee004a485b607fbcc8739e71ae0dd704ac64e1dd",
-      "integrity": "sha256:a8a87d060a05ff51d292f8d9ee004a485b607fbcc8739e71ae0dd704ac64e1dd"
-    },
     "ghcr.io/nils-geistmann/devcontainers-features/zsh:0": {
       "version": "0.0.8",
       "resolved": "ghcr.io/nils-geistmann/devcontainers-features/zsh@sha256:fd57a61a5187480b5e73f8041be5b67005be48f06503736df6cfdd8d0f38f3c4",
       "integrity": "sha256:fd57a61a5187480b5e73f8041be5b67005be48f06503736df6cfdd8d0f38f3c4"
+    },
+    "ghcr.io/prulloac/devcontainer-features/chezmoi:1": {
+      "version": "1.0.0",
+      "resolved": "ghcr.io/prulloac/devcontainer-features/chezmoi@sha256:8f0d53df4d51ef7ff44b7294450cf9ddf2ea7c2636e87d1079cc306c3ae4b48d",
+      "integrity": "sha256:8f0d53df4d51ef7ff44b7294450cf9ddf2ea7c2636e87d1079cc306c3ae4b48d"
     },
     "ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {
       "version": "1.0.2",
