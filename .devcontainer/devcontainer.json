@@ -3,7 +3,7 @@
     "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
     "features": {
         "ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {
-            "packages": "bc,bison,build-essential,ca-certificates,clang,cpio,curl,flex,fzf,git,jq,libssl-dev,lld,llvm,nano,procps,python3,python-is-python3,tar,unzip,wget,zip,zstd",
+            "packages": "bc,bison,build-essential,ca-certificates,clang,cpio,curl,flex,fzf,git,jq,libelf-dev,libssl-dev,lld,llvm,nano,procps,python3,python-is-python3,sudo,tar,unzip,wget,zip,zstd",
             "upgradePackages": false
         },
         "ghcr.io/nils-geistmann/devcontainers-features/zsh:0": {
@@ -23,6 +23,10 @@
             ]
         }
     },
+    "containerEnv": {
+        "CLANG_VERSION": "r563880c"
+    },
+    "onCreateCommand": "sudo dpkg --add-architecture i386 && sudo apt-get update && sudo apt-get install -y gcc-multilib g++-multilib",
     "updateContentCommand": "git submodule update --init --recursive",
-    "postCreateCommand": "chezmoi init --apply gitlab.com/ponces --promptDefaults"
+    "postCreateCommand": "mkdir -p $HOME/.oh-my-zsh/custom/plugins && git clone https://github.com/zsh-users/zsh-autosuggestions $HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions && git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting && chezmoi init --apply gitlab.com/ponces --promptDefaults"
 }

@@ -10,6 +10,8 @@
 # published by the Free Software Foundation.
 #
 # Add clang to your PATH before using this script.
+# Alternatively, set CLANG_VERSION to automatically download a clang toolchain
+# from the Android prebuilt repository.
 #
 
 set -e
@@ -22,6 +24,75 @@ TARGET_CROSS_COMPILE_COMPAT=arm-linux-gnueabi-
 THREAD=$(nproc --all)
 CC_ADDITIONAL_FLAGS="LLVM_IAS=1 LLVM=1"
 TARGET_OUT="./out"
+CLANG_DIR="${CLANG_DIR:-$PWD/toolchains/clang}"
+CLANG_REPO_URL="${CLANG_REPO_URL:-https://github.com/ravindu644/Android-Kernel-Tutorials}"
+
+setup_clang() {
+    local clang_url
+    if [ -n "$CLANG_VERSION" ]; then
+        clang_url="$CLANG_REPO_URL/releases/download/toolchains/clang-$CLANG_VERSION.tar.gz"
+    elif [ -n "$CLANG_URL" ]; then
+        clang_url="$CLANG_URL"
+    else
+        echo "CLANG_VERSION/CLANG_URL not set, using clang from PATH"
+        return
+    fi
+
+    echo "------------------------------"
+    echo " Setting up custom clang       "
+    echo "------------------------------"
+
+    local clang_archive
+    clang_archive="$CLANG_DIR/$(basename "$clang_url")"
+
+    mkdir -p "$CLANG_DIR"
+
+    if [ ! -f "$clang_archive" ]; then
+        echo " Downloading clang from $clang_url "
+        curl -L -o "$clang_archive" "$clang_url"
+    else
+        echo " Using existing clang archive: $clang_archive "
+    fi
+
+    if [ ! -f "$CLANG_DIR/bin/clang" ]; then
+        echo " Extracting clang archive "
+        case "$clang_archive" in
+            *.tar.gz|*.tgz)
+                tar -xzf "$clang_archive" -C "$CLANG_DIR"
+                ;;
+            *.tar.xz|*.txz)
+                tar -xJf "$clang_archive" -C "$CLANG_DIR"
+                ;;
+            *.tar.zst)
+                tar --zstd -xf "$clang_archive" -C "$CLANG_DIR"
+                ;;
+            *.tar.bz2|*.tbz2)
+                tar -xjf "$clang_archive" -C "$CLANG_DIR"
+                ;;
+            *.tar)
+                tar -xf "$clang_archive" -C "$CLANG_DIR"
+                ;;
+            *.zip)
+                unzip -q "$clang_archive" -d "$CLANG_DIR"
+                ;;
+            *)
+                echo " Unknown archive format: $clang_archive "
+                exit 1
+                ;;
+        esac
+    fi
+
+    local clang_bin
+    clang_bin=$(find "$CLANG_DIR" -maxdepth 2 -type f -name clang -print -quit)
+    if [ -z "$clang_bin" ]; then
+        echo " Failed to find clang binary in $CLANG_DIR "
+        exit 1
+    fi
+    clang_bin=$(dirname "$clang_bin")
+
+    echo " Using clang from $clang_bin "
+    export PATH="$clang_bin:$PATH"
+}
 
 FINAL_KERNEL_BUILD_PARA="ARCH=$TARGET_ARCH \
                          CC=$TARGET_CC \
@@ -156,7 +227,11 @@ display_help() {
 main() {
     if [ -z "$1" ] || [ "$1" == "help" ]; then
         display_help
-    elif [ "$1" == "all" ]; then
+        return
+    fi
+
+    if [ "$1" == "all" ]; then
+        setup_clang
         make_defconfig
         build_kernel
         link_all_dtb_files
@@ -164,12 +239,14 @@ main() {
         generate_bootimg
     elif [ "$1" == "cleanbuild" ]; then
         clean
+        setup_clang
         make_defconfig
         build_kernel
         link_all_dtb_files
         generate_flashable
         generate_bootimg
     elif [ "$1" == "kernelonly" ]; then
+        setup_clang
         make_defconfig
         build_kernel
     elif [ "$1" == "defconfig" ]; then
