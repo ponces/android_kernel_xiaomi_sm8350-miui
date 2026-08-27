@@ -131,10 +131,10 @@ clean() {
     echo " Cleaning source tree         "
     echo "------------------------------"
 
-    make mrproper -j$THREAD
-    make clean -j$THREAD
+    #make mrproper -j$THREAD
+    #make clean -j$THREAD
     rm -rf $TARGET_OUT
-    git checkout HEAD drivers/input/touchscreen
+    #git checkout HEAD drivers/input/touchscreen
 }
 
 display_help() {
